@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find pr2_gazebo)/launch/pr2_empty_world.launch" />
+  <node name="sound_play" pkg="sound_play" type="soundplay_node.py" />
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+</launch>

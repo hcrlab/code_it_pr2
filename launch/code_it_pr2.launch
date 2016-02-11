@@ -1,0 +1,3 @@
+<launch>
+  <node name="code_it_pr2" pkg="code_it_pr2" type="main_node" />
+</launch>

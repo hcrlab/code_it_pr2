@@ -5,8 +5,10 @@ project(code_it_pr2)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  rapid
   roscpp
   rospy
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -113,13 +115,14 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(code_it_pr2
-#   src/${PROJECT_NAME}/code_it_pr2.cpp
-# )
+add_library(code_it_pr2_robot_api src/robot_api.cc)
+add_dependencies(code_it_pr2_robot_api ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(code_it_pr2_robot_api ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -127,7 +130,9 @@ include_directories(
 # add_dependencies(code_it_pr2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(code_it_pr2_node src/code_it_pr2_node.cpp)
+add_executable(main_node src/main_node.cc)
+add_dependencies(main_node code_it_pr2_robot_api ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(main_node code_it_pr2_robot_api ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
