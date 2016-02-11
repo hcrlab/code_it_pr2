@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
   ros::ServiceServer say_srv =
       nh.advertiseService("code_it/api/say", &RobotApi::Say, &api);
   ros::Subscriber stop_sub = nh.subscribe(
-      "code_it/stopped", 10, &RobotApi::HandleProgramStopped, &api);
+      "code_it/is_program_running", 10, &RobotApi::HandleProgramStopped, &api);
   ros::spin();
   return 0;
 }
