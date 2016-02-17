@@ -17,6 +17,8 @@ int main(int argc, char** argv) {
       "code_it/api/display_message", &RobotApi::DisplayMessage, &api);
   ros::ServiceServer ask_mc_srv = nh.advertiseService(
       "code_it/api/ask_multiple_choice", &RobotApi::AskMultipleChoice, &api);
+  ros::ServiceServer look_at_srv =
+      nh.advertiseService("code_it/api/look_at", &RobotApi::LookAt, &api);
   ros::Subscriber stop_sub = nh.subscribe(
       "code_it/is_program_running", 10, &RobotApi::HandleProgramStopped, &api);
   ros::spin();

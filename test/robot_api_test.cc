@@ -11,20 +11,22 @@
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
 
+using ::testing::Return;
 using code_it_pr2::RobotApi;
 using rapid::display::MockDisplay;
+using rapid::pr2::MockHead;
 using rapid::pr2::Pr2;
 using rapid::sound::MockSound;
 using rapid::sound::SoundPlay;
-using ::testing::Return;
 
 class RobotApiNodeTest : public ::testing::Test {
  public:
   RobotApiNodeTest()
       : nh_(),
         display_(),
+        head_(),
         sound_(),
-        pr2_(display_, sound_),
+        pr2_(display_, head_, sound_),
         api_(pr2_),
         say_srv_(
             nh_.advertiseService("code_it/api/say", &RobotApi::Say, &api_)),
@@ -68,6 +70,7 @@ class RobotApiNodeTest : public ::testing::Test {
 
   ros::NodeHandle nh_;
   MockDisplay display_;
+  MockHead head_;
   MockSound sound_;
   Pr2 pr2_;
   RobotApi api_;
