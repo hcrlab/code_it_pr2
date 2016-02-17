@@ -11,6 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+set(gmock_INCLUDE_DIR /usr/include/gmock)
+set(gmock_LIB_DIR /usr/lib)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -183,10 +186,12 @@ target_link_libraries(main_node code_it_pr2_robot_api ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_code_it_pr2.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(robot_api_test test/robot_api_test.launch test/robot_api_test.cc)
+  target_link_libraries(robot_api_test code_it_pr2_robot_api gmock ${catkin_LIBRARIES})
+endif()
+
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
