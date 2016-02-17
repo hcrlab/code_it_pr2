@@ -40,7 +40,7 @@ install:
     - rosdep update
     # Create workspace.
     - mkdir -p ~/catkin_ws/src
-    - cd ..; mv rapid ~/catkin_ws/src
+    - cd ..; mv code_it_pr2 ~/catkin_ws/src
     - cd ~/catkin_ws/src
     - git clone https://github.com/hcrlab/blinky.git
     - git clone https://github.com/jstnhuang/rapid.git
