@@ -56,3 +56,4 @@ install:
 # --------------------
 script:
     - catkin run_tests
+    - catkin_test_results build/code_it_pr2
