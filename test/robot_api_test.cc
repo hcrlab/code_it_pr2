@@ -34,9 +34,10 @@ class RobotApiNodeTest : public ::testing::Test {
                                            &RobotApi::DisplayMessage, &api_)),
         is_running_pub_(
             nh_.advertise<std_msgs::Bool>("code_it/is_program_running", 5)),
-        is_running_sub_(nh_.subscribe("code_it/is_program_running", 10,
-                                      &RobotApi::HandleProgramStopped, &api_)) {
-  }
+        is_running_sub_(
+            nh_.subscribe("code_it/is_program_running", 10,
+                          &RobotApiNodeTest::HandleProgramRunningMsg, this)),
+        run_msg_received_(false) {}
 
   void SetUp() {
     while (!IsNodeReady()) {
@@ -60,6 +61,11 @@ class RobotApiNodeTest : public ::testing::Test {
     }
   }
 
+  void HandleProgramRunningMsg(const std_msgs::Bool& msg) {
+    api_.HandleProgramStopped(msg);
+    run_msg_received_ = true;
+  }
+
   ros::NodeHandle nh_;
   MockDisplay display_;
   MockSound sound_;
@@ -70,6 +76,8 @@ class RobotApiNodeTest : public ::testing::Test {
   ros::ServiceServer disp_msg_srv_;
   ros::Publisher is_running_pub_;
   ros::Subscriber is_running_sub_;
+
+  bool run_msg_received_;
 };
 
 TEST_F(RobotApiNodeTest, TestCallsAreWiredUp) {
@@ -86,22 +94,16 @@ TEST_F(RobotApiNodeTest, TestCallsAreWiredUp) {
 }
 
 TEST_F(RobotApiNodeTest, TestScreenResetsOnProgramEnd) {
-  EXPECT_CALL(display_, ShowDefault()).Times(0);
-  std_msgs::Bool msg;
-  msg.data = true;
-  ros::Publisher is_running_pub =
-      nh_.advertise<std_msgs::Bool>("code_it/is_program_running", 10);
-  is_running_pub.publish(msg);
-  bool success = WaitForMessage(5);
-
   EXPECT_CALL(display_, ShowDefault()).WillOnce(Return(true));
+  std_msgs::Bool msg;
   msg.data = false;
-  is_running_pub.publish(msg);
-  success = WaitForMessage(5);
-  EXPECT_EQ(true, success);
+  is_running_pub_.publish(msg);
+  while (!run_msg_received_) {
+    ros::spinOnce();
+  }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   ros::init(argc, argv, "robot_api_test");
   ros::AsyncSpinner spinner(1);
