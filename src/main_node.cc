@@ -21,6 +21,9 @@ int main(int argc, char** argv) {
       nh.advertiseService("code_it/api/look_at", &RobotApi::LookAt, &api);
   ros::Subscriber stop_sub = nh.subscribe(
       "code_it/is_program_running", 10, &RobotApi::HandleProgramStopped, &api);
-  ros::spin();
+  // TODO(jstn): A multi-threaded spinner may be needed for action clients to
+  // work.
+  ros::MultiThreadedSpinner spinner(2);
+  spinner.spin();
   return 0;
 }
