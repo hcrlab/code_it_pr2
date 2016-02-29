@@ -1,21 +1,22 @@
 #include "code_it_pr2/robot_api.h"
 
-#include "code_it/AskMultipleChoice.h"
-#include "code_it/DisplayMessage.h"
-#include "code_it/LookAt.h"
-#include "code_it/Say.h"
+#include "code_it_msgs/AskMultipleChoice.h"
+#include "code_it_msgs/DisplayMessage.h"
+#include "code_it_msgs/LookAt.h"
+#include "code_it_msgs/Say.h"
 #include "rapid/pr2/pr2.h"
 #include "std_msgs/Bool.h"
 
 namespace code_it_pr2 {
 RobotApi::RobotApi(const rapid::pr2::Pr2& robot) : robot_(robot) {}
-bool RobotApi::Say(code_it::SayRequest& req, code_it::SayResponse& res) {
+bool RobotApi::Say(code_it_msgs::SayRequest& req,
+                   code_it_msgs::SayResponse& res) {
   robot_.sound.Say(req.text);
   return true;
 }
 
-bool RobotApi::AskMultipleChoice(code_it::AskMultipleChoiceRequest& req,
-                                 code_it::AskMultipleChoiceResponse& res) {
+bool RobotApi::AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
+                                 code_it_msgs::AskMultipleChoiceResponse& res) {
   std::string choice;
   bool success =
       robot_.display.AskMultipleChoice(req.question, req.choices, &choice);
@@ -23,13 +24,13 @@ bool RobotApi::AskMultipleChoice(code_it::AskMultipleChoiceRequest& req,
   return success;
 }
 
-bool RobotApi::DisplayMessage(code_it::DisplayMessageRequest& req,
-                              code_it::DisplayMessageResponse& res) {
+bool RobotApi::DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
+                              code_it_msgs::DisplayMessageResponse& res) {
   return robot_.display.ShowMessage(req.h1_text, req.h2_text);
 }
 
-bool RobotApi::LookAt(code_it::LookAtRequest& req,
-                      code_it::LookAtResponse& res) {
+bool RobotApi::LookAt(code_it_msgs::LookAtRequest& req,
+                      code_it_msgs::LookAtResponse& res) {
   return robot_.head.LookAt(req.target);
 }
 

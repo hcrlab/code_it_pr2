@@ -1,8 +1,8 @@
 #include "code_it_pr2/robot_api.h"
 
-#include "code_it/Say.h"
-#include "code_it/AskMultipleChoice.h"
-#include "code_it/DisplayMessage.h"
+#include "code_it_msgs/Say.h"
+#include "code_it_msgs/AskMultipleChoice.h"
+#include "code_it_msgs/DisplayMessage.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "rapid/display/display.h"
@@ -89,9 +89,9 @@ TEST_F(RobotApiNodeTest, TestCallsAreWiredUp) {
       ros::service::waitForService("code_it/api/say", ros::Duration(5));
   ASSERT_EQ(true, on_time);
 
-  code_it::SayRequest req;
+  code_it_msgs::SayRequest req;
   req.text = "Hello world!";
-  code_it::SayResponse res;
+  code_it_msgs::SayResponse res;
   bool success = ros::service::call("/code_it/api/say", req, res);
   EXPECT_EQ(true, success);
 }
