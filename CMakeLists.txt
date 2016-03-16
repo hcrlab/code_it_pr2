@@ -6,7 +6,8 @@ project(code_it_pr2)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   code_it_msgs
-  rapid
+  rapid_perception
+  rapid_pr2
   roscpp
   rospy
   std_msgs

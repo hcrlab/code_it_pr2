@@ -7,8 +7,9 @@
 #include "code_it_msgs/DisplayMessage.h"
 #include "code_it_msgs/LookAt.h"
 #include "code_it_msgs/Say.h"
-#include "rapid/perception/rgbd.hpp"
-#include "rapid/pr2/pr2.h"
+#include "rapid_perception/pr2.h"
+#include "rapid_perception/rgbd.hpp"
+#include "rapid_pr2/pr2.h"
 #include "ros/ros.h"
 #include "sensor_msgs/PointCloud2.h"
 #include "std_msgs/Bool.h"
@@ -40,7 +41,7 @@ bool RobotApi::DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
 bool RobotApi::FindObjects(code_it_msgs::FindObjectsRequest& req,
                            code_it_msgs::FindObjectsResponse& res) {
   rpe::Scene scene;
-  bool success = robot_.GetManipulationScene(&scene);
+  bool success = rpe::pr2::GetManipulationScene(&scene);
   if (!success) {
     return false;
   }

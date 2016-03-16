@@ -6,7 +6,7 @@
 #include "code_it_msgs/FindObjects.h"
 #include "code_it_msgs/LookAt.h"
 #include "code_it_msgs/Say.h"
-#include "rapid/pr2/pr2.h"
+#include "rapid_pr2/pr2.h"
 #include "std_msgs/Bool.h"
 
 namespace code_it_pr2 {

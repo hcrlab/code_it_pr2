@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 
 #include "code_it_pr2/robot_api.h"
-#include "rapid/pr2/pr2.h"
+#include "rapid_pr2/pr2.h"
 
 using code_it_pr2::RobotApi;
 

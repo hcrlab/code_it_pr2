@@ -5,9 +5,9 @@
 #include "code_it_msgs/DisplayMessage.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "rapid/display/display.h"
-#include "rapid/pr2/pr2.h"
-#include "rapid/sound/sound.h"
+#include "rapid_display/display.h"
+#include "rapid_pr2/pr2.h"
+#include "rapid_sound/sound.h"
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
 
