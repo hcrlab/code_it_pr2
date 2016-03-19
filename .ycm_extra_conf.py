@@ -57,7 +57,17 @@ flags = [
 '-I',
 '/usr/include/pcl-1.7',
 '-I',
-'/usr/include/eigen3'
+'/usr/include/eigen3',
+'-I',
+'../rapid/rapid_display/include',
+'-I',
+'../rapid/rapid_manipulation/include',
+'-I',
+'../rapid/rapid_perception/include',
+'-I',
+'../rapid/rapid_pr2/include',
+'-I',
+'../rapid/rapid_sound/include',
 ]
 
 # Set this to the absolute path to the folder (NOT the file!) containing the
