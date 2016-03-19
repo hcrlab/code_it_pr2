@@ -1,15 +1,18 @@
 #include "ros/ros.h"
 
+#include "boost/shared_ptr.hpp"
 #include "code_it_pr2/robot_api.h"
 #include "rapid_pr2/pr2.h"
 
+using boost::shared_ptr;
 using code_it_pr2::RobotApi;
+using rapid::pr2::Pr2;
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "code_it_pr2");
   ros::NodeHandle nh;
 
-  rapid::pr2::Pr2 robot = rapid::pr2::BuildReal();
+  shared_ptr<Pr2> robot = rapid::pr2::BuildReal();
   RobotApi api(robot);
   ros::ServiceServer ask_mc_srv = nh.advertiseService(
       "code_it/api/ask_multiple_choice", &RobotApi::AskMultipleChoice, &api);

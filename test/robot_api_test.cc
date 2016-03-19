@@ -1,5 +1,6 @@
 #include "code_it_pr2/robot_api.h"
 
+#include "boost/shared_ptr.hpp"
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/AskMultipleChoice.h"
 #include "code_it_msgs/DisplayMessage.h"
@@ -12,8 +13,11 @@
 #include "std_msgs/Bool.h"
 
 using ::testing::Return;
+using boost::shared_ptr;
 using code_it_pr2::RobotApi;
 using rapid::display::MockDisplay;
+using rapid::manipulation::MockArm;
+using rapid::pr2::MockGripper;
 using rapid::pr2::MockHead;
 using rapid::pr2::Pr2;
 using rapid::sound::MockSound;
@@ -23,10 +27,15 @@ class RobotApiNodeTest : public ::testing::Test {
  public:
   RobotApiNodeTest()
       : nh_(),
+        left_arm_(),
+        right_arm_(),
         display_(),
+        left_gripper_(),
+        right_gripper_(),
         head_(),
         sound_(),
-        pr2_(display_, head_, sound_),
+        pr2_(new Pr2(left_arm_, right_arm_, display_, left_gripper_,
+                     right_gripper_, head_, sound_)),
         api_(pr2_),
         say_srv_(
             nh_.advertiseService("code_it/api/say", &RobotApi::Say, &api_)),
@@ -69,10 +78,14 @@ class RobotApiNodeTest : public ::testing::Test {
   }
 
   ros::NodeHandle nh_;
+  MockArm left_arm_;
+  MockArm right_arm_;
   MockDisplay display_;
+  MockGripper left_gripper_;
+  MockGripper right_gripper_;
   MockHead head_;
   MockSound sound_;
-  Pr2 pr2_;
+  shared_ptr<Pr2> pr2_;
   RobotApi api_;
   ros::ServiceServer say_srv_;
   ros::ServiceServer ask_mc_srv_;

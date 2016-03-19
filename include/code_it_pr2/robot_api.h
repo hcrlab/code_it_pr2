@@ -1,6 +1,7 @@
 #ifndef _CODE_IT_PR2_ROBOT_API_H_
 #define _CODE_IT_PR2_ROBOT_API_H_
 
+#include "boost/shared_ptr.hpp"
 #include "code_it_msgs/AskMultipleChoice.h"
 #include "code_it_msgs/DisplayMessage.h"
 #include "code_it_msgs/FindObjects.h"
@@ -12,7 +13,7 @@
 namespace code_it_pr2 {
 class RobotApi {
  public:
-  RobotApi(const rapid::pr2::Pr2& robot);
+  RobotApi(boost::shared_ptr<rapid::pr2::Pr2> robot);
   bool AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
                          code_it_msgs::AskMultipleChoiceResponse& res);
   bool DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
@@ -25,7 +26,7 @@ class RobotApi {
   void HandleProgramStopped(const std_msgs::Bool& msg);
 
  private:
-  rapid::pr2::Pr2 robot_;
+  boost::shared_ptr<rapid::pr2::Pr2> robot_;
 };
 }  // namespace code_it_pr2
 #endif  // _CODE_IT_PR2_ROBOT_API_H_
