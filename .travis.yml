@@ -56,5 +56,5 @@ install:
 # Command to run tests
 # --------------------
 script:
-    - catkin run_tests
+    - catkin run_tests code_it_pr2 --no-deps
     - catkin_test_results build/code_it_pr2
