@@ -19,6 +19,7 @@ using rapid::display::MockDisplay;
 using rapid::manipulation::MockArm;
 using rapid::manipulation::MockGripper;
 using rapid::manipulation::MockHead;
+using rapid::manipulation::MockTuckArms;
 using rapid::pr2::Pr2;
 using rapid::sound::MockSound;
 using rapid::sound::SoundPlay;
@@ -34,8 +35,9 @@ class RobotApiNodeTest : public ::testing::Test {
         right_gripper_(),
         head_(),
         sound_(),
+        tuck_arms_(),
         pr2_(new Pr2(left_arm_, right_arm_, display_, left_gripper_,
-                     right_gripper_, head_, sound_)),
+                     right_gripper_, head_, sound_, tuck_arms_)),
         api_(pr2_),
         say_srv_(
             nh_.advertiseService("code_it/api/say", &RobotApi::Say, &api_)),
@@ -85,6 +87,7 @@ class RobotApiNodeTest : public ::testing::Test {
   MockGripper right_gripper_;
   MockHead head_;
   MockSound sound_;
+  MockTuckArms tuck_arms_;
   shared_ptr<Pr2> pr2_;
   RobotApi api_;
   ros::ServiceServer say_srv_;
