@@ -47,9 +47,9 @@ bool RobotApi::FindObjects(code_it_msgs::FindObjectsRequest& req,
     return false;
   }
   boost::shared_ptr<rpe::Tabletop> tt = scene.GetPrimarySurface();
-  std::vector<rpe::Object> objects = tt->objects();
-  for (size_t i = 0; i < objects.size(); ++i) {
-    const rpe::Object& obj = objects[i];
+  const std::vector<rpe::Object>* objects = tt->objects();
+  for (size_t i = 0; i < objects->size(); ++i) {
+    const rpe::Object& obj = (*objects)[i];
     code_it_msgs::Object msg;
     msg.pose = obj.pose();
     msg.scale = obj.scale();
