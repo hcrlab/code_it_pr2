@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  tf
 )
 
 set(gmock_INCLUDE_DIR /usr/include/gmock)
@@ -188,11 +189,11 @@ target_link_libraries(main_node code_it_pr2_robot_api ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  add_rostest_gtest(robot_api_test test/robot_api_test.launch test/robot_api_test.cc)
-  target_link_libraries(robot_api_test code_it_pr2_robot_api gmock ${catkin_LIBRARIES})
-endif()
+#if(CATKIN_ENABLE_TESTING)
+#  find_package(rostest REQUIRED)
+#  add_rostest_gtest(robot_api_test test/robot_api_test.launch test/robot_api_test.cc)
+#  target_link_libraries(robot_api_test code_it_pr2_robot_api gmock ${catkin_LIBRARIES})
+#endif()
 
 
 ## Add folders to be run by python nosetests
