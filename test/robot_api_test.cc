@@ -11,6 +11,7 @@
 #include "rapid_sound/sound.h"
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
+#include "std_msgs/String.h"
 
 using ::testing::Return;
 using boost::shared_ptr;
@@ -38,7 +39,8 @@ class RobotApiNodeTest : public ::testing::Test {
         tuck_arms_(),
         pr2_(new Pr2(left_arm_, right_arm_, display_, left_gripper_,
                      right_gripper_, head_, sound_, tuck_arms_)),
-        api_(pr2_),
+        error_pub_(nh_.advertise<std_msgs::String>("code_it/errors", 10)),
+        api_(pr2_, error_pub_),
         say_srv_(
             nh_.advertiseService("code_it/api/say", &RobotApi::Say, &api_)),
         ask_mc_srv_(nh_.advertiseService("code_it/api/ask_multiple_choice",
@@ -89,6 +91,7 @@ class RobotApiNodeTest : public ::testing::Test {
   MockSound sound_;
   MockTuckArms tuck_arms_;
   shared_ptr<Pr2> pr2_;
+  ros::Publisher error_pub_;
   RobotApi api_;
   ros::ServiceServer say_srv_;
   ros::ServiceServer ask_mc_srv_;
