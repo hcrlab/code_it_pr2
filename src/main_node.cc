@@ -4,6 +4,7 @@
 #include "code_it_pr2/robot_api.h"
 #include "rapid_pr2/pr2.h"
 #include "std_msgs/String.h"
+#include "tf/transform_listener.h"
 
 using boost::shared_ptr;
 using code_it_pr2::RobotApi;
@@ -12,6 +13,8 @@ using rapid::pr2::Pr2;
 int main(int argc, char** argv) {
   ros::init(argc, argv, "code_it_pr2");
   ros::NodeHandle nh;
+  ros::AsyncSpinner spinner(4);
+  spinner.start();
   ros::Publisher error_pub =
       nh.advertise<std_msgs::String>("code_it/errors", 10);
 
@@ -36,6 +39,6 @@ int main(int argc, char** argv) {
       nh.advertiseService("code_it/api/tuck_arms", &RobotApi::TuckArms, &api);
   ros::Subscriber stop_sub = nh.subscribe(
       "code_it/is_program_running", 10, &RobotApi::HandleProgramStopped, &api);
-  ros::spin();
+  ros::waitForShutdown();
   return 0;
 }

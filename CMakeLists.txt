@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  tf
 )
 
 set(gmock_INCLUDE_DIR /usr/include/gmock)

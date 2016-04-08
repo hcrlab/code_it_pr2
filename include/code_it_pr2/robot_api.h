@@ -15,6 +15,7 @@
 #include "rapid_pr2/pr2.h"
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
+#include "tf/transform_listener.h"
 
 namespace code_it_pr2 {
 namespace errors {
@@ -64,6 +65,7 @@ class RobotApi {
   void PublishError(const std::string& error);
   boost::shared_ptr<rapid::pr2::Pr2> robot_;
   ros::Publisher error_pub_;
+  tf::TransformListener tf_listener_;
 };
 }  // namespace code_it_pr2
 #endif  // _CODE_IT_PR2_ROBOT_API_H_
