@@ -7,10 +7,12 @@
 #include "code_it_msgs/ArmId.h"
 #include "code_it_msgs/AskMultipleChoice.h"
 #include "code_it_msgs/DisplayMessage.h"
+#include "code_it_msgs/GripperId.h"
 #include "code_it_msgs/LookAt.h"
 #include "code_it_msgs/Pick.h"
 #include "code_it_msgs/Place.h"
 #include "code_it_msgs/Say.h"
+#include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
 #include "rapid_perception/pr2.h"
 #include "rapid_perception/rgbd.hpp"
@@ -183,6 +185,24 @@ bool RobotApi::Place(code_it_msgs::PlaceRequest& req,
 bool RobotApi::Say(code_it_msgs::SayRequest& req,
                    code_it_msgs::SayResponse& res) {
   robot_->sound.Say(req.text);
+  return true;
+}
+
+bool RobotApi::SetGripper(code_it_msgs::SetGripperRequest& req,
+                          code_it_msgs::SetGripperResponse& res) {
+  if (req.gripper.id == code_it_msgs::GripperId::LEFT) {
+    if (req.action == code_it_msgs::SetGripperRequest::OPEN) {
+      robot_->left_gripper.Open(req.max_effort);
+    } else if (req.action == code_it_msgs::SetGripperRequest::CLOSE) {
+      robot_->left_gripper.Close(req.max_effort);
+    }
+  } else {
+    if (req.action == code_it_msgs::SetGripperRequest::OPEN) {
+      robot_->right_gripper.Open(req.max_effort);
+    } else if (req.action == code_it_msgs::SetGripperRequest::CLOSE) {
+      robot_->right_gripper.Close(req.max_effort);
+    }
+  }
   return true;
 }
 

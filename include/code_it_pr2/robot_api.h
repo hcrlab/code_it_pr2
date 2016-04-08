@@ -11,6 +11,7 @@
 #include "code_it_msgs/Pick.h"
 #include "code_it_msgs/Place.h"
 #include "code_it_msgs/Say.h"
+#include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
 #include "rapid_pr2/pr2.h"
 #include "ros/ros.h"
@@ -57,6 +58,8 @@ class RobotApi {
   bool Pick(code_it_msgs::PickRequest& req, code_it_msgs::PickResponse& res);
   bool Place(code_it_msgs::PlaceRequest& req, code_it_msgs::PlaceResponse& res);
   bool Say(code_it_msgs::SayRequest& req, code_it_msgs::SayResponse& res);
+  bool SetGripper(code_it_msgs::SetGripperRequest& req,
+                  code_it_msgs::SetGripperResponse& res);
   bool TuckArms(code_it_msgs::TuckArmsRequest& req,
                 code_it_msgs::TuckArmsResponse& res);
   void HandleProgramStopped(const std_msgs::Bool& msg);
