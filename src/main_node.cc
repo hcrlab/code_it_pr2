@@ -35,6 +35,8 @@ int main(int argc, char** argv) {
       nh.advertiseService("code_it/api/place", &RobotApi::Place, &api);
   ros::ServiceServer say_srv =
       nh.advertiseService("code_it/api/say", &RobotApi::Say, &api);
+  ros::ServiceServer set_gripper_srv =
+      nh.advertiseService("code_it/api/set_gripper", &RobotApi::SetGripper, &api);
   ros::ServiceServer tuck_arms_srv =
       nh.advertiseService("code_it/api/tuck_arms", &RobotApi::TuckArms, &api);
   ros::Subscriber stop_sub = nh.subscribe(
