@@ -29,14 +29,14 @@ class RobotApiNodeTest : public ::testing::Test {
  public:
   RobotApiNodeTest()
       : nh_(),
-        left_arm_(),
-        right_arm_(),
-        display_(),
-        left_gripper_(),
-        right_gripper_(),
-        head_(),
-        sound_(),
-        tuck_arms_(),
+        left_arm_(new MockArm()),
+        right_arm_(new MockArm()),
+        display_(new MockDisplay()),
+        left_gripper_(new MockGripper()),
+        right_gripper_(new MockGripper()),
+        head_(new MockHead()),
+        sound_(new MockSound()),
+        tuck_arms_(new MockTuckArms()),
         pr2_(new Pr2(left_arm_, right_arm_, display_, left_gripper_,
                      right_gripper_, head_, sound_, tuck_arms_)),
         error_pub_(nh_.advertise<std_msgs::String>("code_it/errors", 10)),
@@ -82,15 +82,15 @@ class RobotApiNodeTest : public ::testing::Test {
   }
 
   ros::NodeHandle nh_;
-  MockArm left_arm_;
-  MockArm right_arm_;
-  MockDisplay display_;
-  MockGripper left_gripper_;
-  MockGripper right_gripper_;
-  MockHead head_;
-  MockSound sound_;
-  MockTuckArms tuck_arms_;
-  shared_ptr<Pr2> pr2_;
+  MockArm* left_arm_;
+  MockArm* right_arm_;
+  MockDisplay* display_;
+  MockGripper* left_gripper_;
+  MockGripper* right_gripper_;
+  MockHead* head_;
+  MockSound* sound_;
+  MockTuckArms* tuck_arms_;
+  Pr2* pr2_;
   ros::Publisher error_pub_;
   RobotApi api_;
   ros::ServiceServer say_srv_;
@@ -103,7 +103,7 @@ class RobotApiNodeTest : public ::testing::Test {
 };
 
 TEST_F(RobotApiNodeTest, TestCallsAreWiredUp) {
-  EXPECT_CALL(sound_, Say("Hello world!"));
+  EXPECT_CALL(*sound_, Say("Hello world!"));
   bool on_time =
       ros::service::waitForService("code_it/api/say", ros::Duration(5));
   ASSERT_EQ(true, on_time);
@@ -116,7 +116,7 @@ TEST_F(RobotApiNodeTest, TestCallsAreWiredUp) {
 }
 
 TEST_F(RobotApiNodeTest, TestScreenResetsOnProgramEnd) {
-  EXPECT_CALL(display_, ShowDefault()).WillOnce(Return(true));
+  EXPECT_CALL(*display_, ShowDefault()).WillOnce(Return(true));
   std_msgs::Bool msg;
   msg.data = false;
   is_running_pub_.publish(msg);
