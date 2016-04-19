@@ -14,6 +14,8 @@
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
+#include "geometry_msgs/PoseStamped.h"
+#include "geometry_msgs/Vector3.h"
 #include "rapid_perception/pr2.h"
 #include "rapid_perception/rgbd.hpp"
 #include "rapid_perception/scene.h"
@@ -110,15 +112,18 @@ bool RobotApi::Pick(code_it_msgs::PickRequest& req,
   geometry_msgs::PoseStamped ps = req.object.pose;
   geometry_msgs::Vector3 scale = req.object.scale;
   rapid::perception::ScenePrimitive primitive(ps, scale, "object");
-  rapid::perception::Object* object;
-  scene_.GetObject(req.object.name, &object);
+  rapid::perception::Object object;
+  if (!scene_.GetObject(req.object.name, &object)) {
+    PublishError(errors::PICK_OBJECT_NOT_FOUND);
+    return false;
+  }
   bool success = false;
   if (arm_id == code_it_msgs::ArmId::LEFT) {
     if (has_left_object) {
       PublishError(errors::PICK_LEFT_FULL);
       return false;
     }
-    success = robot_->left_picker()->Pick(*object);
+    success = robot_->left_picker()->Pick(object);
     if (success) {
       robot_->left_gripper()->set_held_object(primitive);
     }
@@ -127,7 +132,7 @@ bool RobotApi::Pick(code_it_msgs::PickRequest& req,
       PublishError(errors::PICK_RIGHT_FULL);
       return false;
     }
-    success = robot_->right_picker()->Pick(*object);
+    success = robot_->right_picker()->Pick(object);
     if (success) {
       robot_->right_gripper()->set_held_object(primitive);
     }

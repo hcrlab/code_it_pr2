@@ -24,6 +24,7 @@ static const char ASK_MC_QUESTION[] =
     "Failed to update the screen to ask a question.";
 static const char GET_SCENE[] = "The robot failed to read its camera data.";
 static const char PICK_OBJECT[] = "The robot was unable to pick up the object.";
+static const char PICK_OBJECT_NOT_FOUND[] = "The object to pick was not found.";
 static const char PICK_LEFT_FULL[] =
     "The robot is already holding something in its left hand.";
 static const char PICK_RIGHT_FULL[] =
