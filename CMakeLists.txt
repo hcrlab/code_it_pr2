@@ -109,7 +109,14 @@ set(gmock_LIB_DIR /usr/lib)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES code_it_pr2
-#  CATKIN_DEPENDS roscpp rospy
+  CATKIN_DEPENDS
+    code_it_msgs
+    rapid_perception
+    rapid_pr2
+    roscpp
+    rospy
+    std_msgs
+    tf
 #  DEPENDS system_lib
 )
 

@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
   ros::Publisher error_pub =
       nh.advertise<std_msgs::String>("code_it/errors", 10);
 
-  shared_ptr<Pr2> robot = rapid::pr2::BuildReal();
+  Pr2* robot = rapid::pr2::BuildReal();
   RobotApi api(robot, error_pub);
 
   ros::ServiceServer ask_mc_srv = nh.advertiseService(
@@ -35,12 +35,13 @@ int main(int argc, char** argv) {
       nh.advertiseService("code_it/api/place", &RobotApi::Place, &api);
   ros::ServiceServer say_srv =
       nh.advertiseService("code_it/api/say", &RobotApi::Say, &api);
-  ros::ServiceServer set_gripper_srv =
-      nh.advertiseService("code_it/api/set_gripper", &RobotApi::SetGripper, &api);
+  ros::ServiceServer set_gripper_srv = nh.advertiseService(
+      "code_it/api/set_gripper", &RobotApi::SetGripper, &api);
   ros::ServiceServer tuck_arms_srv =
       nh.advertiseService("code_it/api/tuck_arms", &RobotApi::TuckArms, &api);
   ros::Subscriber stop_sub = nh.subscribe(
       "code_it/is_program_running", 10, &RobotApi::HandleProgramStopped, &api);
   ros::waitForShutdown();
+  delete robot;
   return 0;
 }

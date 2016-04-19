@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "boost/shared_ptr.hpp"
 #include "code_it_msgs/AskMultipleChoice.h"
 #include "code_it_msgs/DisplayMessage.h"
 #include "code_it_msgs/FindObjects.h"
@@ -13,6 +12,7 @@
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
+#include "rapid_perception/scene.h"
 #include "rapid_pr2/pr2.h"
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
@@ -24,6 +24,7 @@ static const char ASK_MC_QUESTION[] =
     "Failed to update the screen to ask a question.";
 static const char GET_SCENE[] = "The robot failed to read its camera data.";
 static const char PICK_OBJECT[] = "The robot was unable to pick up the object.";
+static const char PICK_OBJECT_NOT_FOUND[] = "The object to pick was not found.";
 static const char PICK_LEFT_FULL[] =
     "The robot is already holding something in its left hand.";
 static const char PICK_RIGHT_FULL[] =
@@ -41,12 +42,14 @@ static const char RESET_SCREEN_ON_STOP[] =
     "Failed to reset the screen on program stop.";
 static const char TUCK_DEPLOY[] =
     "The robot was unable to tuck or deploy its arms.";
+static const char PICK_SCENE_NOT_PARSED[] =
+    "The robot needs to find objects before it can pick anything.";
 }  // namespace errors
 
 class RobotApi {
  public:
-  RobotApi(boost::shared_ptr<rapid::pr2::Pr2> robot,
-           const ros::Publisher& error_pub);
+  // Does not take ownership of the Pr2 pointer.
+  RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub);
   bool AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
                          code_it_msgs::AskMultipleChoiceResponse& res);
   bool DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
@@ -66,9 +69,11 @@ class RobotApi {
 
  private:
   void PublishError(const std::string& error);
-  boost::shared_ptr<rapid::pr2::Pr2> robot_;
+  rapid::pr2::Pr2* const robot_;
   ros::Publisher error_pub_;
   tf::TransformListener tf_listener_;
+  rapid::perception::Scene scene_;  // Most recent scene parsed.
+  bool scene_has_parsed_;
 };
 }  // namespace code_it_pr2
 #endif  // _CODE_IT_PR2_ROBOT_API_H_
