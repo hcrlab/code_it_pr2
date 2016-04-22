@@ -63,10 +63,10 @@ bool RobotApi::FindObjects(code_it_msgs::FindObjectsRequest& req,
     return false;
   }
   scene_has_parsed_ = true;
-  boost::shared_ptr<rpe::Tabletop> tt = scene_.GetPrimarySurface();
-  const std::vector<rpe::Object>* objects = tt->objects();
-  for (size_t i = 0; i < objects->size(); ++i) {
-    const rpe::Object& obj = (*objects)[i];
+  rpe::HSurface tt = scene_.primary_surface();
+  const std::vector<rpe::Object>& objects = tt.objects();
+  for (size_t i = 0; i < objects.size(); ++i) {
+    const rpe::Object& obj = objects[i];
     code_it_msgs::Object msg;
     msg.name = obj.name();
     msg.pose = obj.pose();
@@ -109,9 +109,6 @@ bool RobotApi::Pick(code_it_msgs::PickRequest& req,
     }
   }
 
-  geometry_msgs::PoseStamped ps = req.object.pose;
-  geometry_msgs::Vector3 scale = req.object.scale;
-  rapid::perception::ScenePrimitive primitive(ps, scale, "object");
   rapid::perception::Object object;
   if (!scene_.GetObject(req.object.name, &object)) {
     PublishError(errors::PICK_OBJECT_NOT_FOUND);
@@ -124,18 +121,12 @@ bool RobotApi::Pick(code_it_msgs::PickRequest& req,
       return false;
     }
     success = robot_->left_picker()->Pick(object);
-    if (success) {
-      robot_->left_gripper()->set_held_object(primitive);
-    }
   } else {
     if (has_right_object) {
       PublishError(errors::PICK_RIGHT_FULL);
       return false;
     }
     success = robot_->right_picker()->Pick(object);
-    if (success) {
-      robot_->right_gripper()->set_held_object(primitive);
-    }
   }
   if (!success) {
     PublishError(errors::PICK_OBJECT);
@@ -181,22 +172,16 @@ bool RobotApi::Place(code_it_msgs::PlaceRequest& req,
     PublishError(errors::GET_SCENE);
     return false;
   }
-  boost::shared_ptr<rpe::Tabletop> tt = scene.GetPrimarySurface();
+  const rpe::HSurface& tt = scene.primary_surface();
 
   if (arm_id == code_it_msgs::ArmId::LEFT) {
-    rpe::ScenePrimitive obj;
+    rpe::Object obj;
     robot_->left_gripper()->HeldObject(&obj);
-    success = robot_->left_placer()->Place(obj, *tt);
-    if (success) {
-      robot_->left_gripper()->set_is_holding_object(false);
-    }
+    success = robot_->left_placer()->Place(obj, tt);
   } else {
-    rpe::ScenePrimitive obj;
+    rpe::Object obj;
     robot_->right_gripper()->HeldObject(&obj);
-    success = robot_->right_placer()->Place(obj, *tt);
-    if (success) {
-      robot_->right_gripper()->set_is_holding_object(false);
-    }
+    success = robot_->right_placer()->Place(obj, tt);
   }
   if (!success) {
     PublishError(errors::PLACE_OBJECT);
