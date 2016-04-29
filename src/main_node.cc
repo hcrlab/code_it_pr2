@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
   ros::Publisher error_pub =
       nh.advertise<std_msgs::String>("code_it/errors", 10);
 
-  Pr2* robot = rapid::pr2::BuildReal();
+  Pr2* robot = rapid::pr2::BuildReal(nh);
   RobotApi api(robot, error_pub);
 
   ros::ServiceServer ask_mc_srv = nh.advertiseService(
