@@ -27,6 +27,8 @@ int main(int argc, char** argv) {
       "code_it/api/display_message", &RobotApi::DisplayMessage, &api);
   ros::ServiceServer find_objects_srv = nh.advertiseService(
       "code_it/api/find_objects", &RobotApi::FindObjects, &api);
+  ros::ServiceServer is_gripper_open_srv = nh.advertiseService(
+      "code_it/api/is_gripper_open", &RobotApi::IsGripperOpen, &api);
   ros::ServiceServer look_at_srv =
       nh.advertiseService("code_it/api/look_at", &RobotApi::LookAt, &api);
   ros::ServiceServer pick_srv =
@@ -41,6 +43,7 @@ int main(int argc, char** argv) {
       nh.advertiseService("code_it/api/tuck_arms", &RobotApi::TuckArms, &api);
   ros::Subscriber stop_sub = nh.subscribe(
       "code_it/is_program_running", 10, &RobotApi::HandleProgramStopped, &api);
+  ROS_INFO("CodeIt! for the PR2 is ready.");
   ros::waitForShutdown();
   delete robot;
   return 0;
