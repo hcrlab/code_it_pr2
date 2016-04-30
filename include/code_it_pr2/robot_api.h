@@ -14,10 +14,13 @@
 #include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
 #include "rapid_perception/scene.h"
+#include "rapid_perception/scene_viz.h"
 #include "rapid_pr2/pr2.h"
+#include "rapid_ros/publisher.h"
 #include "ros/ros.h"
 #include "std_msgs/Bool.h"
 #include "tf/transform_listener.h"
+#include "visualization_msgs/Marker.h"
 
 namespace code_it_pr2 {
 namespace errors {
@@ -51,7 +54,8 @@ static const char PICK_SCENE_NOT_PARSED[] =
 class RobotApi {
  public:
   // Does not take ownership of the Pr2 pointer.
-  RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub);
+  RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
+           const rapid_ros::Publisher<visualization_msgs::Marker>& marker_pub);
   bool AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
                          code_it_msgs::AskMultipleChoiceResponse& res);
   bool DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
@@ -76,7 +80,9 @@ class RobotApi {
   rapid::pr2::Pr2* const robot_;
   ros::Publisher error_pub_;
   tf::TransformListener tf_listener_;
-  rapid::perception::Scene scene_;  // Most recent scene parsed.
+  rapid_ros::Publisher<visualization_msgs::Marker> marker_pub_;
+  rapid::perception::Scene scene_;         // Most recent scene parsed.
+  rapid::perception::SceneViz scene_viz_;  // Most recent scene parsed.
   bool scene_has_parsed_;
 };
 }  // namespace code_it_pr2

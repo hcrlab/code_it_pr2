@@ -3,12 +3,15 @@
 #include "boost/shared_ptr.hpp"
 #include "code_it_pr2/robot_api.h"
 #include "rapid_pr2/pr2.h"
+#include "rapid_ros/publisher.h"
 #include "std_msgs/String.h"
 #include "tf/transform_listener.h"
+#include "visualization_msgs/Marker.h"
 
 using boost::shared_ptr;
 using code_it_pr2::RobotApi;
 using rapid::pr2::Pr2;
+using visualization_msgs::Marker;
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "code_it_pr2");
@@ -17,9 +20,11 @@ int main(int argc, char** argv) {
   spinner.start();
   ros::Publisher error_pub =
       nh.advertise<std_msgs::String>("code_it/errors", 10);
+  rapid_ros::Publisher<Marker> marker_pub(
+      nh.advertise<Marker>("code_it_markers", 100));
 
   Pr2* robot = rapid::pr2::BuildReal(nh);
-  RobotApi api(robot, error_pub);
+  RobotApi api(robot, error_pub, marker_pub);
 
   ros::ServiceServer ask_mc_srv = nh.advertiseService(
       "code_it/api/ask_multiple_choice", &RobotApi::AskMultipleChoice, &api);

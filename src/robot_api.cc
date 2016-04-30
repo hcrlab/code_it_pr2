@@ -19,23 +19,30 @@
 #include "rapid_perception/pr2.h"
 #include "rapid_perception/rgbd.hpp"
 #include "rapid_perception/scene.h"
+#include "rapid_perception/scene_viz.h"
 #include "rapid_pr2/pr2.h"
+#include "rapid_ros/publisher.h"
 #include "ros/ros.h"
 #include "sensor_msgs/PointCloud2.h"
 #include "std_msgs/Bool.h"
 #include "std_msgs/String.h"
 #include "tf/transform_listener.h"
+#include "visualization_msgs/Marker.h"
 
 namespace rpe = rapid::perception;
 using boost::shared_ptr;
 using std::string;
+using visualization_msgs::Marker;
 
 namespace code_it_pr2 {
-RobotApi::RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub)
+RobotApi::RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
+                   const rapid_ros::Publisher<Marker>& marker_pub)
     : robot_(robot),
       error_pub_(error_pub),
       tf_listener_(),
+      marker_pub_(marker_pub),
       scene_(),
+      scene_viz_(&marker_pub_),
       scene_has_parsed_(false) {}
 
 bool RobotApi::AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
@@ -62,6 +69,8 @@ bool RobotApi::FindObjects(code_it_msgs::FindObjectsRequest& req,
     PublishError(errors::GET_SCENE);
     return false;
   }
+  scene_viz_.set_scene(scene_);
+  scene_viz_.Visualize();
   scene_has_parsed_ = true;
   rpe::HSurface tt = scene_.primary_surface();
   const std::vector<rpe::Object>& objects = tt.objects();
@@ -185,6 +194,8 @@ bool RobotApi::Place(code_it_msgs::PlaceRequest& req,
     PublishError(errors::GET_SCENE);
     return false;
   }
+  scene_viz_.set_scene(scene_);
+  scene_viz_.Visualize();
   const rpe::HSurface& tt = scene.primary_surface();
 
   if (arm_id == code_it_msgs::ArmId::LEFT) {
