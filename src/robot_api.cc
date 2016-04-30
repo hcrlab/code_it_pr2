@@ -76,6 +76,19 @@ bool RobotApi::FindObjects(code_it_msgs::FindObjectsRequest& req,
   return true;
 }
 
+bool RobotApi::IsGripperOpen(code_it_msgs::IsGripperOpenRequest& req,
+                             code_it_msgs::IsGripperOpenResponse& res) {
+  if (req.gripper.id == code_it_msgs::GripperId::RIGHT) {
+    res.is_open = robot_->right_gripper()->IsOpen();
+  } else if (req.gripper.id == code_it_msgs::GripperId::LEFT) {
+    res.is_open = robot_->left_gripper()->IsOpen();
+  } else {
+    PublishError(errors::IS_OPEN_AMBIG);
+    return false;
+  }
+  return true;
+}
+
 bool RobotApi::LookAt(code_it_msgs::LookAtRequest& req,
                       code_it_msgs::LookAtResponse& res) {
   return robot_->head()->LookAt(req.target);

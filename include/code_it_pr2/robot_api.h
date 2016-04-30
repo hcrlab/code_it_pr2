@@ -6,6 +6,7 @@
 #include "code_it_msgs/AskMultipleChoice.h"
 #include "code_it_msgs/DisplayMessage.h"
 #include "code_it_msgs/FindObjects.h"
+#include "code_it_msgs/IsGripperOpen.h"
 #include "code_it_msgs/LookAt.h"
 #include "code_it_msgs/Pick.h"
 #include "code_it_msgs/Place.h"
@@ -23,6 +24,7 @@ namespace errors {
 static const char ASK_MC_QUESTION[] =
     "Failed to update the screen to ask a question.";
 static const char GET_SCENE[] = "The robot failed to read its camera data.";
+static const char IS_OPEN_AMBIG[] = "Not sure which gripper to check is open.";
 static const char PICK_OBJECT[] = "The robot was unable to pick up the object.";
 static const char PICK_OBJECT_NOT_FOUND[] = "The object to pick was not found.";
 static const char PICK_LEFT_FULL[] =
@@ -56,6 +58,8 @@ class RobotApi {
                       code_it_msgs::DisplayMessageResponse& res);
   bool FindObjects(code_it_msgs::FindObjectsRequest& req,
                    code_it_msgs::FindObjectsResponse& res);
+  bool IsGripperOpen(code_it_msgs::IsGripperOpenRequest& req,
+                     code_it_msgs::IsGripperOpenResponse& res);
   bool LookAt(code_it_msgs::LookAtRequest& req,
               code_it_msgs::LookAtResponse& res);
   bool Pick(code_it_msgs::PickRequest& req, code_it_msgs::PickResponse& res);
