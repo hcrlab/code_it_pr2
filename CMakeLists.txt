@@ -8,10 +8,12 @@ find_package(catkin REQUIRED COMPONENTS
   code_it_msgs
   rapid_perception
   rapid_pr2
+  rapid_ros
   roscpp
   rospy
   std_msgs
   tf
+  visualization_msgs
 )
 
 set(gmock_INCLUDE_DIR /usr/include/gmock)
@@ -113,10 +115,12 @@ catkin_package(
     code_it_msgs
     rapid_perception
     rapid_pr2
+    rapid_ros
     roscpp
     rospy
     std_msgs
     tf
+    visualization_msgs
 #  DEPENDS system_lib
 )
 
