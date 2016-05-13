@@ -24,9 +24,10 @@
 
 namespace code_it_pr2 {
 namespace errors {
-static const char ASK_MC_QUESTION[] =
-    "Failed to update the screen to ask a question.";
+static const char ASK_MC_QUESTION[] = "Failed to ask multiple choice question.";
+static const char DISPLAY_MESSAGE[] = "Failed to display message.";
 static const char GET_SCENE[] = "The robot failed to read its camera data.";
+static const char LOOK_AT[] = "Failed to look at target.";
 static const char IS_OPEN_AMBIG[] = "Not sure which gripper to check is open.";
 static const char PICK_OBJECT[] = "The robot was unable to pick up the object.";
 static const char PICK_OBJECT_NOT_FOUND[] = "The object to pick was not found.";
