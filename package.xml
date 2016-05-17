@@ -42,6 +42,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>code_it_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
+  <build_depend>pr2_pbd_interaction</build_depend>
   <build_depend>rapid_perception</build_depend>
   <build_depend>rapid_pr2</build_depend>
   <build_depend>rapid_ros</build_depend>
@@ -52,6 +53,7 @@
   <build_depend>visualization_msgs</build_depend>
   <run_depend>code_it_msgs</run_depend>
   <run_depend>geometry_msgs</run_depend>
+  <run_depend>pr2_pbd_interaction</run_depend>
   <run_depend>rapid_perception</run_depend>
   <run_depend>rapid_pr2</run_depend>
   <run_depend>rapid_ros</run_depend>

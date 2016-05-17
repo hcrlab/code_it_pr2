@@ -1,0 +1,40 @@
+<launch>
+	<arg name="isReload" default="false" />
+
+	<!-- Where is experiment state stored? -->
+	<arg name="dataRoot" default="$(env HOME)" />
+
+	<!-- Which experiment number should we use? (Affects data save
+	directory) -->
+	<arg name="experimentNumber" default="1" />
+
+	<!-- Are we running in simulation or on the real robot? -->
+	<arg name="sim" default="false" />
+
+	<!-- Do we want a code coverage report? -->
+	<arg name="coverage" default="false" />
+  <arg name="kinect_frame_prefix" default="/head_mount_kinect" />
+  <arg name="kinect_camera_name" default="head_mount_kinect" />
+
+	<!-- This makes the robot look around appropriately -->
+  <include file="$(find pr2_social_gaze)/launch/gaze.launch" />
+
+	<include file="$(find tabletop_object_detector)/launch/tabletop_segmentation.launch">
+	    <arg name="tabletop_segmentation_points_in" value="$(arg kinect_camera_name)/depth_registered/points" />
+	</include>
+
+	<node name="pr2_arm_control" pkg="pr2_arm_control" type="arm_control_node.py" output="screen" />
+
+  <include file="$(find pr2_pbd_interaction)/launch/fake_caster.launch" />
+
+  <node name="mongo_msg_db" pkg="mongo_msg_db" type="db_node.py" />
+
+	<!-- This runs the interaction node itself.	It is the main state
+	machine for interaction and PbD -->
+	<node name="pr2_pbd_interaction" pkg="pr2_pbd_interaction" type="pbd_node.py" output="screen">
+		<param name="dataRoot" value="$(arg dataRoot)" />
+		<param name="isReload" value="$(arg isReload)" />
+		<param name="experimentNumber" value="$(arg experimentNumber)" />
+		<param name="coverage" value="$(arg coverage)" />
+	</node>
+</launch>

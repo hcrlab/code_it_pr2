@@ -44,10 +44,12 @@ install:
     - mkdir -p ~/catkin_ws/src
     - cd ..; mv code_it_pr2 ~/catkin_ws/src
     - cd ~/catkin_ws/src
-    - git clone https://github.com/jstnhuang/agile_grasp.git
+    - git clone https://github.com/PR2/pr2_pbd.git
     - git clone https://github.com/hcrlab/blinky.git
-    - git clone https://github.com/hcrlab/code_it_msgs.git
     - git clone https://github.com/hcrlab/code_it.git
+    - git clone https://github.com/hcrlab/code_it_msgs.git
+    - git clone https://github.com/jstnhuang/agile_grasp.git
+    - git clone https://github.com/jstnhuang/mongo_msg_db_msgs.git
     - git clone https://github.com/jstnhuang/rapid.git
     - catkin_init_workspace
     # Install dependencies

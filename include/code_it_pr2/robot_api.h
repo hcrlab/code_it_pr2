@@ -10,9 +10,11 @@
 #include "code_it_msgs/LookAt.h"
 #include "code_it_msgs/Pick.h"
 #include "code_it_msgs/Place.h"
+#include "code_it_msgs/RunPbdAction.h"
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
+#include "pr2_pbd_interaction/ExecuteActionById.h"
 #include "rapid_perception/scene.h"
 #include "rapid_perception/scene_viz.h"
 #include "rapid_pr2/pr2.h"
@@ -29,6 +31,7 @@ static const char DISPLAY_MESSAGE[] = "Failed to display message.";
 static const char GET_SCENE[] = "The robot failed to read its camera data.";
 static const char LOOK_AT[] = "Failed to look at target.";
 static const char IS_OPEN_AMBIG[] = "Not sure which gripper to check is open.";
+static const char PBD_ACTION_FAILED[] = "The PbD action failed to run.";
 static const char PICK_OBJECT[] = "The robot was unable to pick up the object.";
 static const char PICK_OBJECT_NOT_FOUND[] = "The object to pick was not found.";
 static const char PICK_LEFT_FULL[] =
@@ -56,7 +59,9 @@ class RobotApi {
  public:
   // Does not take ownership of the Pr2 pointer.
   RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
-           const rapid_ros::Publisher<visualization_msgs::Marker>& marker_pub);
+           const rapid_ros::Publisher<visualization_msgs::Marker>& marker_pub,
+           const rapid_ros::ServiceClient<
+               pr2_pbd_interaction::ExecuteActionById>& pbd_client);
   bool AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
                          code_it_msgs::AskMultipleChoiceResponse& res);
   bool DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
@@ -69,6 +74,8 @@ class RobotApi {
               code_it_msgs::LookAtResponse& res);
   bool Pick(code_it_msgs::PickRequest& req, code_it_msgs::PickResponse& res);
   bool Place(code_it_msgs::PlaceRequest& req, code_it_msgs::PlaceResponse& res);
+  bool RunPbdAction(code_it_msgs::RunPbdActionRequest& req,
+                    code_it_msgs::RunPbdActionResponse& res);
   bool Say(code_it_msgs::SayRequest& req, code_it_msgs::SayResponse& res);
   bool SetGripper(code_it_msgs::SetGripperRequest& req,
                   code_it_msgs::SetGripperResponse& res);
@@ -85,6 +92,7 @@ class RobotApi {
   rapid::perception::Scene scene_;         // Most recent scene parsed.
   rapid::perception::SceneViz scene_viz_;  // Most recent scene parsed.
   bool scene_has_parsed_;
+  rapid_ros::ServiceClient<pr2_pbd_interaction::ExecuteActionById> pbd_client_;
 };
 }  // namespace code_it_pr2
 #endif  // _CODE_IT_PR2_ROBOT_API_H_
