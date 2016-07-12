@@ -49,17 +49,18 @@ install:
     - git clone https://github.com/hcrlab/code_it.git
     - git clone https://github.com/hcrlab/code_it_msgs.git
     - git clone https://github.com/jstnhuang/agile_grasp.git
+    - git clone https://github.com/jstnhuang/mongo_msg_db.git
     - git clone https://github.com/jstnhuang/mongo_msg_db_msgs.git
     - git clone https://github.com/jstnhuang/rapid.git
     - catkin_init_workspace
     # Install dependencies
     - cd ~/catkin_ws/
-    - rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
+    - rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y -q
     # Build
     - catkin build
 
 # Command to run tests
 # --------------------
 script:
-    - catkin run_tests code_it_pr2 --no-deps
+    - catkin build --catkin-make-args run_tests -- code_it_pr2 --no-deps
     - catkin_test_results build/code_it_pr2
