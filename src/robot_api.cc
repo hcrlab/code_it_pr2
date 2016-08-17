@@ -18,7 +18,6 @@
 #include "geometry_msgs/Vector3.h"
 #include "pr2_pbd_interaction/ExecuteActionById.h"
 #include "rapid_perception/pr2.h"
-#include "rapid_perception/rgbd.h"
 #include "rapid_perception/scene.h"
 #include "rapid_perception/scene_viz.h"
 #include "rapid_pr2/pr2.h"
