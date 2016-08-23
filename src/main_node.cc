@@ -2,16 +2,17 @@
 
 #include "boost/shared_ptr.hpp"
 #include "code_it_pr2/robot_api.h"
-#include "pr2_pbd_interaction/ExecuteActionById.h"
+#include "pr2_pbd_interaction/ExecuteAction.h"
 #include "rapid_pr2/pr2.h"
 #include "rapid_ros/publisher.h"
+#include "rapid_ros/action_client.h"
 #include "std_msgs/String.h"
 #include "tf/transform_listener.h"
 #include "visualization_msgs/Marker.h"
 
 using boost::shared_ptr;
 using code_it_pr2::RobotApi;
-using pr2_pbd_interaction::ExecuteActionById;
+using pr2_pbd_interaction::ExecuteAction;
 using rapid::pr2::Pr2;
 using visualization_msgs::Marker;
 
@@ -24,8 +25,7 @@ int main(int argc, char** argv) {
       nh.advertise<std_msgs::String>("code_it/errors", 10);
   rapid_ros::Publisher<Marker> marker_pub(
       nh.advertise<Marker>("code_it_markers", 100));
-  rapid_ros::ServiceClient<ExecuteActionById> pbd_client(
-      nh.serviceClient<ExecuteActionById>("/execute_action"));
+  rapid_ros::ActionClient<ExecuteAction> pbd_client("execute_pbd_action");
 
   Pr2* robot = rapid::pr2::BuildReal(nh);
   RobotApi api(robot, error_pub, marker_pub, pbd_client);

@@ -16,7 +16,7 @@
 #include "code_it_msgs/TuckArms.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/Vector3.h"
-#include "pr2_pbd_interaction/ExecuteActionById.h"
+#include "pr2_pbd_interaction/ExecuteAction.h"
 #include "rapid_perception/pr2.h"
 #include "rapid_perception/scene.h"
 #include "rapid_perception/scene_viz.h"
@@ -31,15 +31,16 @@
 
 namespace rpe = rapid::perception;
 using boost::shared_ptr;
-using pr2_pbd_interaction::ExecuteActionById;
+using pr2_pbd_interaction::ExecuteAction;
+using pr2_pbd_interaction::ExecuteGoal;
+using pr2_pbd_interaction::ExecuteResult;
 using std::string;
 using visualization_msgs::Marker;
 
 namespace code_it_pr2 {
-RobotApi::RobotApi(
-    rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
-    const rapid_ros::Publisher<Marker>& marker_pub,
-    const rapid_ros::ServiceClient<ExecuteActionById>& pbd_client)
+RobotApi::RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
+                   const rapid_ros::Publisher<Marker>& marker_pub,
+                   rapid_ros::ActionClient<ExecuteAction>& pbd_client)
     : robot_(robot),
       error_pub_(error_pub),
       tf_listener_(),
@@ -228,14 +229,23 @@ bool RobotApi::Place(code_it_msgs::PlaceRequest& req,
 
 bool RobotApi::RunPbdAction(code_it_msgs::RunPbdActionRequest& req,
                             code_it_msgs::RunPbdActionResponse& res) {
-  ExecuteActionById::Request pbd_req;
-  ExecuteActionById::Response pbd_res;
-  pbd_req.action_id = req.action_id;
-  bool success = pbd_client_.call(pbd_req, pbd_res);
-  if (!success) {
-    res.error = errors::PBD_ACTION_FAILED;
+  ExecuteGoal goal;
+  goal.action_id = req.action_id;
+  pbd_client_.sendGoal(goal);
+  bool on_time = pbd_client_.waitForResult();
+  if (!on_time) {
+    res.error = errors::PBD_ACTION_TIMED_OUT;
     return true;
   }
+  actionlib::SimpleClientGoalState state = pbd_client_.getState();
+  if (state == state.SUCCEEDED) {
+  } else if (state == state.ABORTED) {
+    res.error = "Execution aborted: " + state.getText();
+  } else {
+    res.error = errors::PBD_ACTION_FAILED;
+  }
+  ExecuteResult::ConstPtr result = pbd_client_.getResult();
+
   return true;
 }
 
