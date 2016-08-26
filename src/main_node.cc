@@ -2,6 +2,8 @@
 
 #include "boost/shared_ptr.hpp"
 #include "code_it_pr2/robot_api.h"
+#include "object_search_msgs/GetObjectInfo.h"
+#include "object_search_msgs/SearchFromDb.h"
 #include "pr2_pbd_interaction/ExecuteAction.h"
 #include "rapid_pr2/pr2.h"
 #include "rapid_ros/publisher.h"
@@ -26,14 +28,21 @@ int main(int argc, char** argv) {
   rapid_ros::Publisher<Marker> marker_pub(
       nh.advertise<Marker>("code_it_markers", 100));
   rapid_ros::ActionClient<ExecuteAction> pbd_client("execute_pbd_action");
+  ros::ServiceClient find_landmark =
+      nh.serviceClient<object_search_msgs::SearchFromDb>("find_object_from_db");
+  ros::ServiceClient get_landmark_info =
+      nh.serviceClient<object_search_msgs::GetObjectInfo>("get_object_info");
 
   Pr2* robot = rapid::pr2::BuildReal(nh);
-  RobotApi api(robot, error_pub, marker_pub, pbd_client);
+  RobotApi api(robot, error_pub, marker_pub, pbd_client, find_landmark,
+               get_landmark_info);
 
   ros::ServiceServer ask_mc_srv = nh.advertiseService(
       "code_it/api/ask_multiple_choice", &RobotApi::AskMultipleChoice, &api);
   ros::ServiceServer disp_msg_srv = nh.advertiseService(
       "code_it/api/display_message", &RobotApi::DisplayMessage, &api);
+  ros::ServiceServer find_custom_landmarks_srv = nh.advertiseService(
+      "code_it/api/find_custom_landmark", &RobotApi::FindCustomLandmarks, &api);
   ros::ServiceServer find_objects_srv = nh.advertiseService(
       "code_it/api/find_objects", &RobotApi::FindObjects, &api);
   ros::ServiceServer is_gripper_open_srv = nh.advertiseService(

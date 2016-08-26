@@ -5,6 +5,7 @@
 
 #include "code_it_msgs/AskMultipleChoice.h"
 #include "code_it_msgs/DisplayMessage.h"
+#include "code_it_msgs/FindCustomLandmarks.h"
 #include "code_it_msgs/FindObjects.h"
 #include "code_it_msgs/IsGripperOpen.h"
 #include "code_it_msgs/LookAt.h"
@@ -14,6 +15,7 @@
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
+#include "object_search_msgs/SearchFromDb.h"
 #include "pr2_pbd_interaction/ExecuteAction.h"
 #include "rapid_perception/scene.h"
 #include "rapid_perception/scene_viz.h"
@@ -29,6 +31,8 @@ namespace errors {
 static const char ASK_MC_QUESTION[] = "Failed to ask multiple choice question.";
 static const char DISPLAY_MESSAGE[] = "Failed to display message.";
 static const char GET_SCENE[] = "The robot failed to read its camera data.";
+static const char FIND_LANDMARK_FAILED[] =
+    "The robot was unable to find the landmark.";
 static const char LOOK_AT[] = "Failed to look at target.";
 static const char IS_OPEN_AMBIG[] = "Not sure which gripper to check is open.";
 static const char PBD_ACTION_FAILED[] = "The PbD action failed to run.";
@@ -62,11 +66,15 @@ class RobotApi {
   RobotApi(
       rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
       const rapid_ros::Publisher<visualization_msgs::Marker>& marker_pub,
-      rapid_ros::ActionClient<pr2_pbd_interaction::ExecuteAction>& pbd_client);
+      rapid_ros::ActionClient<pr2_pbd_interaction::ExecuteAction>& pbd_client,
+      const ros::ServiceClient& find_landmark,
+      const ros::ServiceClient& get_landmark_info);
   bool AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
                          code_it_msgs::AskMultipleChoiceResponse& res);
   bool DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
                       code_it_msgs::DisplayMessageResponse& res);
+  bool FindCustomLandmarks(code_it_msgs::FindCustomLandmarksRequest& req,
+                           code_it_msgs::FindCustomLandmarksResponse& res);
   bool FindObjects(code_it_msgs::FindObjectsRequest& req,
                    code_it_msgs::FindObjectsResponse& res);
   bool IsGripperOpen(code_it_msgs::IsGripperOpenRequest& req,
@@ -94,6 +102,8 @@ class RobotApi {
   rapid::perception::SceneViz scene_viz_;  // Most recent scene parsed.
   bool scene_has_parsed_;
   rapid_ros::ActionClient<pr2_pbd_interaction::ExecuteAction>& pbd_client_;
+  ros::ServiceClient find_landmark_;
+  ros::ServiceClient get_landmark_info_;
 };
 }  // namespace code_it_pr2
 #endif  // _CODE_IT_PR2_ROBOT_API_H_

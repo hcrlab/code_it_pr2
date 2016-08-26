@@ -7,7 +7,10 @@
 #include "code_it_msgs/ArmId.h"
 #include "code_it_msgs/AskMultipleChoice.h"
 #include "code_it_msgs/DisplayMessage.h"
+#include "code_it_msgs/FindCustomLandmarks.h"
+#include "code_it_msgs/FindObjects.h"
 #include "code_it_msgs/GripperId.h"
+#include "code_it_msgs/Landmark.h"
 #include "code_it_msgs/LookAt.h"
 #include "code_it_msgs/Pick.h"
 #include "code_it_msgs/Place.h"
@@ -16,7 +19,11 @@
 #include "code_it_msgs/TuckArms.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/Vector3.h"
+#include "object_search_msgs/Match.h"
+#include "object_search_msgs/GetObjectInfo.h"
+#include "object_search_msgs/SearchFromDb.h"
 #include "pr2_pbd_interaction/ExecuteAction.h"
+#include "pr2_pbd_interaction/Landmark.h"
 #include "rapid_perception/pr2.h"
 #include "rapid_perception/scene.h"
 #include "rapid_perception/scene_viz.h"
@@ -40,7 +47,9 @@ using visualization_msgs::Marker;
 namespace code_it_pr2 {
 RobotApi::RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
                    const rapid_ros::Publisher<Marker>& marker_pub,
-                   rapid_ros::ActionClient<ExecuteAction>& pbd_client)
+                   rapid_ros::ActionClient<ExecuteAction>& pbd_client,
+                   const ros::ServiceClient& find_landmark,
+                   const ros::ServiceClient& get_landmark_info)
     : robot_(robot),
       error_pub_(error_pub),
       tf_listener_(),
@@ -48,7 +57,9 @@ RobotApi::RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
       scene_(),
       scene_viz_(&marker_pub_),
       scene_has_parsed_(false),
-      pbd_client_(pbd_client) {}
+      pbd_client_(pbd_client),
+      find_landmark_(find_landmark),
+      get_landmark_info_(get_landmark_info) {}
 
 bool RobotApi::AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
                                  code_it_msgs::AskMultipleChoiceResponse& res) {
@@ -68,6 +79,39 @@ bool RobotApi::DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
   if (!success) {
     res.error = errors::DISPLAY_MESSAGE;
   }
+  return true;
+}
+
+bool RobotApi::FindCustomLandmarks(
+    code_it_msgs::FindCustomLandmarksRequest& req,
+    code_it_msgs::FindCustomLandmarksResponse& res) {
+  object_search_msgs::GetObjectInfoRequest info_req;
+  info_req.db_id = req.db_id;
+  object_search_msgs::GetObjectInfoResponse info_res;
+  get_landmark_info_.call(info_req, info_res);
+
+  object_search_msgs::SearchFromDbRequest search_req;
+  search_req.object_id = req.db_id;
+  search_req.min_results = 0;
+  search_req.is_tabletop = req.is_tabletop;
+  search_req.max_error = 0;  // 0 value means get from parameter server.
+  object_search_msgs::SearchFromDbResponse search_res;
+  bool success = find_landmark_.call(search_req, search_res);
+  if (!success) {
+    res.error = errors::FIND_LANDMARK_FAILED;
+    return true;
+  }
+  // Convert object_search Matches to code_it Landmarks.
+  for (size_t i = 0; i < search_res.matches.size(); ++i) {
+    const object_search_msgs::Match& match = search_res.matches[i];
+    code_it_msgs::Landmark landmark;
+    landmark.name = info_res.name;
+    landmark.pose.pose = match.pose;
+    landmark.scale = info_res.dimensions;
+    landmark.db_id = req.db_id;
+    res.landmarks.push_back(landmark);
+  }
+
   return true;
 }
 
@@ -231,6 +275,17 @@ bool RobotApi::RunPbdAction(code_it_msgs::RunPbdActionRequest& req,
                             code_it_msgs::RunPbdActionResponse& res) {
   ExecuteGoal goal;
   goal.action_id = req.action_id;
+
+  // Convert code_it landmarks to PbD landmarks.
+  for (size_t i = 0; i < req.landmarks.size(); ++i) {
+    pr2_pbd_interaction::Landmark landmark;
+    landmark.name = req.landmarks[i].name;
+    landmark.pose = req.landmarks[i].pose.pose;
+    landmark.dimensions = req.landmarks[i].scale;
+    landmark.db_id = req.landmarks[i].db_id;
+    goal.landmarks.push_back(landmark);
+  }
+
   pbd_client_.sendGoal(goal);
   bool on_time = pbd_client_.waitForResult();
   if (!on_time) {
