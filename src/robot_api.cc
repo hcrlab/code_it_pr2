@@ -93,6 +93,7 @@ bool RobotApi::FindCustomLandmarks(
 
   object_search_msgs::SearchFromDbRequest search_req;
   search_req.object_id = req.db_id;
+  search_req.name = req.name;
   search_req.min_results = 0;
   search_req.is_tabletop = req.is_tabletop;
   search_req.max_error = 0;  // 0 value means get from parameter server.
