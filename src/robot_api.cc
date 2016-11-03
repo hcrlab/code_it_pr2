@@ -87,6 +87,7 @@ bool RobotApi::FindCustomLandmarks(
     code_it_msgs::FindCustomLandmarksResponse& res) {
   object_search_msgs::GetObjectInfoRequest info_req;
   info_req.db_id = req.db_id;
+  info_req.name = req.name;
   object_search_msgs::GetObjectInfoResponse info_res;
   get_landmark_info_.call(info_req, info_res);
 
