@@ -277,6 +277,7 @@ bool RobotApi::RunPbdAction(code_it_msgs::RunPbdActionRequest& req,
                             code_it_msgs::RunPbdActionResponse& res) {
   ExecuteGoal goal;
   goal.action_id = req.action_id;
+  goal.name = req.name;
 
   // Convert code_it landmarks to PbD landmarks.
   for (size_t i = 0; i < req.landmarks.size(); ++i) {
