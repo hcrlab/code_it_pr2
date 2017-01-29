@@ -49,10 +49,10 @@ int main(int argc, char** argv) {
       "code_it/api/is_gripper_open", &RobotApi::IsGripperOpen, &api);
   ros::ServiceServer look_at_srv =
       nh.advertiseService("code_it/api/look_at", &RobotApi::LookAt, &api);
-  ros::ServiceServer pick_srv =
-      nh.advertiseService("code_it/api/pick", &RobotApi::Pick, &api);
-  ros::ServiceServer place_srv =
-      nh.advertiseService("code_it/api/place", &RobotApi::Place, &api);
+  // ros::ServiceServer pick_srv =
+  //    nh.advertiseService("code_it/api/pick", &RobotApi::Pick, &api);
+  // ros::ServiceServer place_srv =
+  //    nh.advertiseService("code_it/api/place", &RobotApi::Place, &api);
   ros::ServiceServer run_pbd_srv = nh.advertiseService(
       "code_it/api/run_pbd_action", &RobotApi::RunPbdAction, &api);
   ros::ServiceServer say_srv =

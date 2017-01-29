@@ -12,8 +12,8 @@
 #include "code_it_msgs/GripperId.h"
 #include "code_it_msgs/Landmark.h"
 #include "code_it_msgs/LookAt.h"
-#include "code_it_msgs/Pick.h"
-#include "code_it_msgs/Place.h"
+//#include "code_it_msgs/Pick.h"
+//#include "code_it_msgs/Place.h"
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
@@ -162,116 +162,117 @@ bool RobotApi::LookAt(code_it_msgs::LookAtRequest& req,
   return true;
 }
 
-bool RobotApi::Pick(code_it_msgs::PickRequest& req,
-                    code_it_msgs::PickResponse& res) {
-  if (!scene_has_parsed_) {
-    res.error = errors::PICK_SCENE_NOT_PARSED;
-    return true;
-  }
-  bool has_left_object = robot_->left_gripper()->is_holding_object();
-  bool has_right_object = robot_->right_gripper()->is_holding_object();
-
-  // Check if both hands are full
-  if (has_left_object && has_right_object) {
-    res.error = errors::PICK_ARMS_FULL;
-    return true;
-  }
-
-  // If using the default arm, use whichever arm is free, or the right arm if
-  // both arms are free.
-  int8_t arm_id = req.arm.arm_id;
-  if (arm_id == code_it_msgs::ArmId::DEFAULT) {
-    if (has_left_object && !has_right_object) {
-      arm_id = code_it_msgs::ArmId::RIGHT;
-    } else if (!has_left_object && has_right_object) {
-      arm_id = code_it_msgs::ArmId::LEFT;
-    } else {
-      arm_id = code_it_msgs::ArmId::RIGHT;
-    }
-  }
-
-  rapid::perception::Object object;
-  if (!scene_.GetObject(req.object.name, &object)) {
-    res.error = errors::PICK_OBJECT_NOT_FOUND;
-    return true;
-  }
-  bool success = false;
-  if (arm_id == code_it_msgs::ArmId::LEFT) {
-    if (has_left_object) {
-      res.error = errors::PICK_LEFT_FULL;
-      return true;
-    }
-    success = robot_->left_picker()->Pick(object);
-  } else {
-    if (has_right_object) {
-      res.error = errors::PICK_RIGHT_FULL;
-      return true;
-    }
-    success = robot_->right_picker()->Pick(object);
-  }
-  if (!success) {
-    res.error = errors::PICK_OBJECT;
-    return true;
-  }
-  return true;
-}
-
-bool RobotApi::Place(code_it_msgs::PlaceRequest& req,
-                     code_it_msgs::PlaceResponse& res) {
-  bool has_left_object = robot_->left_gripper()->is_holding_object();
-  bool has_right_object = robot_->right_gripper()->is_holding_object();
-
-  // Check if both hands are empty
-  if (!has_left_object && !has_right_object) {
-    res.error = errors::PLACE_NO_OBJECTS;
-    return true;
-  }
-
-  // If using default arm, default to whichever arm has an object, or the right
-  // arm if both arms have objects.
-  int8_t arm_id = req.arm.arm_id;
-  if (arm_id == code_it_msgs::ArmId::DEFAULT) {
-    if (has_left_object && !has_right_object) {
-      arm_id = code_it_msgs::ArmId::LEFT;
-    } else {
-      arm_id = code_it_msgs::ArmId::RIGHT;
-    }
-  }
-  if (arm_id == code_it_msgs::ArmId::LEFT && !has_left_object) {
-    res.error = errors::PLACE_NO_LEFT_OBJECT;
-    return true;
-  }
-  if (arm_id == code_it_msgs::ArmId::RIGHT && !has_right_object) {
-    res.error = errors::PLACE_NO_RIGHT_OBJECT;
-    return true;
-  }
-
-  // Get the tabletop.
-  rpe::Scene scene;
-  bool success = rpe::pr2::GetManipulationScene(tf_listener_, &scene);
-  if (!success) {
-    res.error = errors::GET_SCENE;
-    return true;
-  }
-  scene_viz_.set_scene(scene_);
-  scene_viz_.Visualize();
-  const rpe::HSurface& tt = scene.primary_surface();
-
-  if (arm_id == code_it_msgs::ArmId::LEFT) {
-    rpe::Object obj;
-    robot_->left_gripper()->HeldObject(&obj);
-    success = robot_->left_placer()->Place(obj, tt);
-  } else {
-    rpe::Object obj;
-    robot_->right_gripper()->HeldObject(&obj);
-    success = robot_->right_placer()->Place(obj, tt);
-  }
-  if (!success) {
-    res.error = errors::PLACE_OBJECT;
-    return true;
-  }
-  return true;
-}
+// bool RobotApi::Pick(code_it_msgs::PickRequest& req,
+//                    code_it_msgs::PickResponse& res) {
+//  if (!scene_has_parsed_) {
+//    res.error = errors::PICK_SCENE_NOT_PARSED;
+//    return true;
+//  }
+//  bool has_left_object = robot_->left_gripper()->is_holding_object();
+//  bool has_right_object = robot_->right_gripper()->is_holding_object();
+//
+//  // Check if both hands are full
+//  if (has_left_object && has_right_object) {
+//    res.error = errors::PICK_ARMS_FULL;
+//    return true;
+//  }
+//
+//  // If using the default arm, use whichever arm is free, or the right arm if
+//  // both arms are free.
+//  int8_t arm_id = req.arm.arm_id;
+//  if (arm_id == code_it_msgs::ArmId::DEFAULT) {
+//    if (has_left_object && !has_right_object) {
+//      arm_id = code_it_msgs::ArmId::RIGHT;
+//    } else if (!has_left_object && has_right_object) {
+//      arm_id = code_it_msgs::ArmId::LEFT;
+//    } else {
+//      arm_id = code_it_msgs::ArmId::RIGHT;
+//    }
+//  }
+//
+//  rapid::perception::Object object;
+//  if (!scene_.GetObject(req.object.name, &object)) {
+//    res.error = errors::PICK_OBJECT_NOT_FOUND;
+//    return true;
+//  }
+//  bool success = false;
+//  if (arm_id == code_it_msgs::ArmId::LEFT) {
+//    if (has_left_object) {
+//      res.error = errors::PICK_LEFT_FULL;
+//      return true;
+//    }
+//    success = robot_->left_picker()->Pick(object);
+//  } else {
+//    if (has_right_object) {
+//      res.error = errors::PICK_RIGHT_FULL;
+//      return true;
+//    }
+//    success = robot_->right_picker()->Pick(object);
+//  }
+//  if (!success) {
+//    res.error = errors::PICK_OBJECT;
+//    return true;
+//  }
+//  return true;
+//}
+//
+// bool RobotApi::Place(code_it_msgs::PlaceRequest& req,
+//                     code_it_msgs::PlaceResponse& res) {
+//  bool has_left_object = robot_->left_gripper()->is_holding_object();
+//  bool has_right_object = robot_->right_gripper()->is_holding_object();
+//
+//  // Check if both hands are empty
+//  if (!has_left_object && !has_right_object) {
+//    res.error = errors::PLACE_NO_OBJECTS;
+//    return true;
+//  }
+//
+//  // If using default arm, default to whichever arm has an object, or the
+//  right
+//  // arm if both arms have objects.
+//  int8_t arm_id = req.arm.arm_id;
+//  if (arm_id == code_it_msgs::ArmId::DEFAULT) {
+//    if (has_left_object && !has_right_object) {
+//      arm_id = code_it_msgs::ArmId::LEFT;
+//    } else {
+//      arm_id = code_it_msgs::ArmId::RIGHT;
+//    }
+//  }
+//  if (arm_id == code_it_msgs::ArmId::LEFT && !has_left_object) {
+//    res.error = errors::PLACE_NO_LEFT_OBJECT;
+//    return true;
+//  }
+//  if (arm_id == code_it_msgs::ArmId::RIGHT && !has_right_object) {
+//    res.error = errors::PLACE_NO_RIGHT_OBJECT;
+//    return true;
+//  }
+//
+//  // Get the tabletop.
+//  rpe::Scene scene;
+//  bool success = rpe::pr2::GetManipulationScene(tf_listener_, &scene);
+//  if (!success) {
+//    res.error = errors::GET_SCENE;
+//    return true;
+//  }
+//  scene_viz_.set_scene(scene_);
+//  scene_viz_.Visualize();
+//  const rpe::HSurface& tt = scene.primary_surface();
+//
+//  if (arm_id == code_it_msgs::ArmId::LEFT) {
+//    rpe::Object obj;
+//    robot_->left_gripper()->HeldObject(&obj);
+//    success = robot_->left_placer()->Place(obj, tt);
+//  } else {
+//    rpe::Object obj;
+//    robot_->right_gripper()->HeldObject(&obj);
+//    success = robot_->right_placer()->Place(obj, tt);
+//  }
+//  if (!success) {
+//    res.error = errors::PLACE_OBJECT;
+//    return true;
+//  }
+//  return true;
+//}
 
 bool RobotApi::RunPbdAction(code_it_msgs::RunPbdActionRequest& req,
                             code_it_msgs::RunPbdActionResponse& res) {

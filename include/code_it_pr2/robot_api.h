@@ -9,8 +9,8 @@
 #include "code_it_msgs/FindObjects.h"
 #include "code_it_msgs/IsGripperOpen.h"
 #include "code_it_msgs/LookAt.h"
-#include "code_it_msgs/Pick.h"
-#include "code_it_msgs/Place.h"
+//#include "code_it_msgs/Pick.h"
+//#include "code_it_msgs/Place.h"
 #include "code_it_msgs/RunPbdAction.h"
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/SetGripper.h"
@@ -81,8 +81,9 @@ class RobotApi {
                      code_it_msgs::IsGripperOpenResponse& res);
   bool LookAt(code_it_msgs::LookAtRequest& req,
               code_it_msgs::LookAtResponse& res);
-  bool Pick(code_it_msgs::PickRequest& req, code_it_msgs::PickResponse& res);
-  bool Place(code_it_msgs::PlaceRequest& req, code_it_msgs::PlaceResponse& res);
+  // bool Pick(code_it_msgs::PickRequest& req, code_it_msgs::PickResponse& res);
+  // bool Place(code_it_msgs::PlaceRequest& req, code_it_msgs::PlaceResponse&
+  // res);
   bool RunPbdAction(code_it_msgs::RunPbdActionRequest& req,
                     code_it_msgs::RunPbdActionResponse& res);
   bool Say(code_it_msgs::SayRequest& req, code_it_msgs::SayResponse& res);
