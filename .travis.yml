@@ -18,7 +18,7 @@ cache: apt
 before_install: # Use this to prepare the system to install prerequisites or dependencies
     # Define some config vars
     - sudo apt-get --purge remove mongodb-10gen postgresql-9.2 postgresql-contrib-9.2 postgresql-9.3 postgresql-contrib-9.3
-    - export ROS_DISTRO=hydro
+    - export ROS_DISTRO=indigo
     # Settings to make installing script more general.
     - export ROS_CI_DESKTOP=`lsb_release -cs`  # e.g. 'precise'
     - export ROS_MASTER_URI=http://localhost:11311
@@ -36,6 +36,8 @@ install:
     - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     - sudo apt-get update -qq
     - sudo apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin ros-$ROS_DISTRO-ros
+    - sudo apt-get install -qq -y mongodb ros-$ROS_DISTRO-warehouse-ros
+    - sudo apt-get install -qq -y ros-$ROS_DISTRO-moveit-*
     - sudo pip install -U setuptools
     - sudo pip install -U catkin_tools
     - source /opt/ros/$ROS_DISTRO/setup.bash
@@ -58,6 +60,16 @@ install:
     # Install dependencies
     - cd ~/catkin_ws/
     - rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y -q
+    # Install latest gmock
+    - mkdir ~/local
+    - cd ~/local
+    - git clone https://github.com/google/googletest.git
+    - cd ~/local/googletest
+    - mkdir mybuild
+    - cd ~/local/googletest/mybuild
+    - cmake ..
+    - make
+    - sudo make install
     # Build
     - catkin build
 
