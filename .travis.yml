@@ -73,6 +73,7 @@ install:
     - make
     - sudo make install
     # Build
+    - cd ~/catkin_ws
     - catkin build
 
 # Command to run tests
