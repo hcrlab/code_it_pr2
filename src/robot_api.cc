@@ -19,8 +19,8 @@
 #include "code_it_msgs/TuckArms.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/Vector3.h"
-#include "object_search_msgs/Match.h"
 #include "object_search_msgs/GetObjectInfo.h"
+#include "object_search_msgs/Match.h"
 #include "object_search_msgs/SearchFromDb.h"
 #include "pr2_pbd_interaction/ExecuteAction.h"
 #include "pr2_pbd_interaction/Landmark.h"
@@ -355,10 +355,7 @@ void RobotApi::HandleProgramStopped(const std_msgs::Bool& msg) {
   if (msg.data) {
     return;  // Program is running, nothing to do.
   }
-  bool success = robot_->display()->ShowDefault();
-  if (!success) {
-    PublishError(errors::RESET_SCREEN_ON_STOP);
-  }
+  robot_->display()->ShowDefault();
 }
 
 void RobotApi::PublishError(const string& error) {

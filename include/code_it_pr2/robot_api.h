@@ -52,8 +52,6 @@ static const char PLACE_NO_LEFT_OBJECT[] =
     "The robot has no object in its left hand to place.";
 static const char PLACE_NO_RIGHT_OBJECT[] =
     "The robot has no object in its right hand to place.";
-static const char RESET_SCREEN_ON_STOP[] =
-    "Failed to reset the screen on program stop.";
 static const char TUCK_DEPLOY[] =
     "The robot was unable to tuck or deploy its arms.";
 static const char PICK_SCENE_NOT_PARSED[] =
