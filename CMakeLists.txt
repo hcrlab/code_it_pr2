@@ -137,7 +137,7 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(code_it_pr2_robot_api src/robot_api.cc)
+add_library(code_it_pr2_robot_api src/robot_api.cpp)
 add_dependencies(code_it_pr2_robot_api ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(code_it_pr2_robot_api ${catkin_LIBRARIES})
 
@@ -147,7 +147,7 @@ target_link_libraries(code_it_pr2_robot_api ${catkin_LIBRARIES})
 # add_dependencies(code_it_pr2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(main_node src/main_node.cc)
+add_executable(main_node src/main_node.cpp)
 add_dependencies(main_node code_it_pr2_robot_api ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(main_node code_it_pr2_robot_api ${catkin_LIBRARIES})
 
