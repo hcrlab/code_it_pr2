@@ -6,8 +6,8 @@
 #include "object_search_msgs/SearchFromDb.h"
 #include "pr2_pbd_interaction/ExecuteAction.h"
 #include "rapid_pr2/pr2.h"
-#include "rapid_ros/publisher.h"
 #include "rapid_ros/action_client.h"
+#include "rapid_ros/publisher.h"
 #include "std_msgs/String.h"
 #include "tf/transform_listener.h"
 #include "visualization_msgs/Marker.h"
@@ -23,8 +23,6 @@ int main(int argc, char** argv) {
   ros::NodeHandle nh;
   ros::AsyncSpinner spinner(4);
   spinner.start();
-  ros::Publisher error_pub =
-      nh.advertise<std_msgs::String>("code_it/errors", 10);
   rapid_ros::Publisher<Marker> marker_pub(
       nh.advertise<Marker>("code_it_markers", 100));
   rapid_ros::ActionClient<ExecuteAction> pbd_client("execute_pbd_action");
@@ -34,8 +32,7 @@ int main(int argc, char** argv) {
       nh.serviceClient<object_search_msgs::GetObjectInfo>("get_object_info");
 
   Pr2* robot = rapid::pr2::BuildReal(nh);
-  RobotApi api(robot, error_pub, marker_pub, pbd_client, find_landmark,
-               get_landmark_info);
+  RobotApi api(robot, marker_pub, pbd_client, find_landmark, get_landmark_info);
 
   ros::ServiceServer ask_mc_srv = nh.advertiseService(
       "code_it/api/ask_multiple_choice", &RobotApi::AskMultipleChoice, &api);

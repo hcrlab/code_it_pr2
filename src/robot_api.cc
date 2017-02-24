@@ -45,13 +45,12 @@ using std::string;
 using visualization_msgs::Marker;
 
 namespace code_it_pr2 {
-RobotApi::RobotApi(rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
+RobotApi::RobotApi(rapid::pr2::Pr2* robot,
                    const rapid_ros::Publisher<Marker>& marker_pub,
                    rapid_ros::ActionClient<ExecuteAction>& pbd_client,
                    const ros::ServiceClient& find_landmark,
                    const ros::ServiceClient& get_landmark_info)
     : robot_(robot),
-      error_pub_(error_pub),
       tf_listener_(),
       marker_pub_(marker_pub),
       scene_(),
@@ -356,12 +355,5 @@ void RobotApi::HandleProgramStopped(const std_msgs::Bool& msg) {
     return;  // Program is running, nothing to do.
   }
   robot_->display()->ShowDefault();
-}
-
-void RobotApi::PublishError(const string& error) {
-  std_msgs::String error_msg;
-  error_msg.data = error;
-  error_pub_.publish(error_msg);
-  ROS_ERROR("%s", error.c_str());
 }
 }  // namespace code_it_pr2

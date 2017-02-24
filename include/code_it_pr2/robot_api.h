@@ -62,7 +62,7 @@ class RobotApi {
  public:
   // Does not take ownership of the Pr2 pointer.
   RobotApi(
-      rapid::pr2::Pr2* robot, const ros::Publisher& error_pub,
+      rapid::pr2::Pr2* robot,
       const rapid_ros::Publisher<visualization_msgs::Marker>& marker_pub,
       rapid_ros::ActionClient<pr2_pbd_interaction::ExecuteAction>& pbd_client,
       const ros::ServiceClient& find_landmark,
@@ -92,9 +92,7 @@ class RobotApi {
   void HandleProgramStopped(const std_msgs::Bool& msg);
 
  private:
-  void PublishError(const std::string& error);
   rapid::pr2::Pr2* const robot_;
-  ros::Publisher error_pub_;
   tf::TransformListener tf_listener_;
   rapid_ros::Publisher<visualization_msgs::Marker> marker_pub_;
   rapid::perception::Scene scene_;         // Most recent scene parsed.
