@@ -73,8 +73,8 @@ install:
     - make
     - sudo make install
     # Build
-    - cd ~/catkin_ws/src/code_it_pr2
-    - catkin build --this
+    - cd ~/catkin_ws/
+    - catkin build code_it_pr2
 
 # Command to run tests
 # --------------------
