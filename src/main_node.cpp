@@ -1,5 +1,7 @@
 #include "ros/ros.h"
 
+#include "actionlib/client/simple_action_client.h"
+#include "blinky/FaceAction.h"
 #include "boost/shared_ptr.hpp"
 #include "code_it_pr2/robot_api.h"
 #include "object_search_msgs/GetObjectInfo.h"
@@ -30,9 +32,15 @@ int main(int argc, char** argv) {
       nh.serviceClient<object_search_msgs::SearchFromDb>("find_object_from_db");
   ros::ServiceClient get_landmark_info =
       nh.serviceClient<object_search_msgs::GetObjectInfo>("get_object_info");
+  actionlib::SimpleActionClient<blinky::FaceAction> blinky_client("blinky",
+                                                                  true);
+  if (!blinky_client.waitForServer(ros::Duration(5.0))) {
+    ROS_ERROR("Blinky server not available!");
+  }
 
   Pr2* robot = rapid::pr2::BuildReal(nh);
-  RobotApi api(robot, marker_pub, pbd_client, find_landmark, get_landmark_info);
+  RobotApi api(robot, marker_pub, pbd_client, find_landmark, get_landmark_info,
+               &blinky_client);
 
   ros::ServiceServer ask_mc_srv = nh.advertiseService(
       "code_it/api/ask_multiple_choice", &RobotApi::AskMultipleChoice, &api);

@@ -12,8 +12,6 @@
 #include "code_it_msgs/GripperId.h"
 #include "code_it_msgs/Landmark.h"
 #include "code_it_msgs/LookAt.h"
-//#include "code_it_msgs/Pick.h"
-//#include "code_it_msgs/Place.h"
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/SetGripper.h"
 #include "code_it_msgs/TuckArms.h"
@@ -43,13 +41,15 @@ using pr2_pbd_interaction::ExecuteGoal;
 using pr2_pbd_interaction::ExecuteResult;
 using std::string;
 using visualization_msgs::Marker;
+typedef actionlib::SimpleActionClient<blinky::FaceAction> BlinkyClient;
 
 namespace code_it_pr2 {
 RobotApi::RobotApi(rapid::pr2::Pr2* robot,
                    const rapid_ros::Publisher<Marker>& marker_pub,
                    rapid_ros::ActionClient<ExecuteAction>& pbd_client,
                    const ros::ServiceClient& find_landmark,
-                   const ros::ServiceClient& get_landmark_info)
+                   const ros::ServiceClient& get_landmark_info,
+                   BlinkyClient* blinky_client)
     : robot_(robot),
       tf_listener_(),
       marker_pub_(marker_pub),
@@ -58,26 +58,38 @@ RobotApi::RobotApi(rapid::pr2::Pr2* robot,
       scene_has_parsed_(false),
       pbd_client_(pbd_client),
       find_landmark_(find_landmark),
-      get_landmark_info_(get_landmark_info) {}
+      get_landmark_info_(get_landmark_info),
+      blinky_client_(blinky_client) {}
 
 bool RobotApi::AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
                                  code_it_msgs::AskMultipleChoiceResponse& res) {
-  string choice;
-  bool success =
-      robot_->display()->AskMultipleChoice(req.question, req.choices, &choice);
-  res.choice = choice;
-  if (!success) {
-    res.error = errors::ASK_MC_QUESTION;
+  blinky::FaceGoal goal;
+  goal.display_type = blinky::FaceGoal::ASK_CHOICE;
+  goal.question = req.question;
+  goal.choices = req.choices;
+  if (!blinky_client_->waitForServer(ros::Duration(5.0))) {
+    res.error = errors::BLINKY_NOT_AVAILABLE;
+    return true;
   }
+  blinky_client_->sendGoal(goal);
+  blinky_client_->waitForResult(ros::Duration(0));
+  blinky::FaceResultConstPtr result = blinky_client_->getResult();
+  res.choice = result->choice;
   return true;
 }
 
 bool RobotApi::DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
                               code_it_msgs::DisplayMessageResponse& res) {
-  bool success = robot_->display()->ShowMessage(req.h1_text, req.h2_text);
-  if (!success) {
-    res.error = errors::DISPLAY_MESSAGE;
+  blinky::FaceGoal goal;
+  goal.display_type = blinky::FaceGoal::DISPLAY_MESSAGE;
+  goal.h1_text = req.h1_text;
+  goal.h2_text = req.h2_text;
+  blinky_client_->sendGoal(goal);
+  if (!blinky_client_->waitForResult(ros::Duration(5.0))) {
+    res.error = errors::BLINKY_NOT_AVAILABLE;
+    return true;
   }
+
   return true;
 }
 
@@ -161,118 +173,6 @@ bool RobotApi::LookAt(code_it_msgs::LookAtRequest& req,
   return true;
 }
 
-// bool RobotApi::Pick(code_it_msgs::PickRequest& req,
-//                    code_it_msgs::PickResponse& res) {
-//  if (!scene_has_parsed_) {
-//    res.error = errors::PICK_SCENE_NOT_PARSED;
-//    return true;
-//  }
-//  bool has_left_object = robot_->left_gripper()->is_holding_object();
-//  bool has_right_object = robot_->right_gripper()->is_holding_object();
-//
-//  // Check if both hands are full
-//  if (has_left_object && has_right_object) {
-//    res.error = errors::PICK_ARMS_FULL;
-//    return true;
-//  }
-//
-//  // If using the default arm, use whichever arm is free, or the right arm if
-//  // both arms are free.
-//  int8_t arm_id = req.arm.arm_id;
-//  if (arm_id == code_it_msgs::ArmId::DEFAULT) {
-//    if (has_left_object && !has_right_object) {
-//      arm_id = code_it_msgs::ArmId::RIGHT;
-//    } else if (!has_left_object && has_right_object) {
-//      arm_id = code_it_msgs::ArmId::LEFT;
-//    } else {
-//      arm_id = code_it_msgs::ArmId::RIGHT;
-//    }
-//  }
-//
-//  rapid::perception::Object object;
-//  if (!scene_.GetObject(req.object.name, &object)) {
-//    res.error = errors::PICK_OBJECT_NOT_FOUND;
-//    return true;
-//  }
-//  bool success = false;
-//  if (arm_id == code_it_msgs::ArmId::LEFT) {
-//    if (has_left_object) {
-//      res.error = errors::PICK_LEFT_FULL;
-//      return true;
-//    }
-//    success = robot_->left_picker()->Pick(object);
-//  } else {
-//    if (has_right_object) {
-//      res.error = errors::PICK_RIGHT_FULL;
-//      return true;
-//    }
-//    success = robot_->right_picker()->Pick(object);
-//  }
-//  if (!success) {
-//    res.error = errors::PICK_OBJECT;
-//    return true;
-//  }
-//  return true;
-//}
-//
-// bool RobotApi::Place(code_it_msgs::PlaceRequest& req,
-//                     code_it_msgs::PlaceResponse& res) {
-//  bool has_left_object = robot_->left_gripper()->is_holding_object();
-//  bool has_right_object = robot_->right_gripper()->is_holding_object();
-//
-//  // Check if both hands are empty
-//  if (!has_left_object && !has_right_object) {
-//    res.error = errors::PLACE_NO_OBJECTS;
-//    return true;
-//  }
-//
-//  // If using default arm, default to whichever arm has an object, or the
-//  right
-//  // arm if both arms have objects.
-//  int8_t arm_id = req.arm.arm_id;
-//  if (arm_id == code_it_msgs::ArmId::DEFAULT) {
-//    if (has_left_object && !has_right_object) {
-//      arm_id = code_it_msgs::ArmId::LEFT;
-//    } else {
-//      arm_id = code_it_msgs::ArmId::RIGHT;
-//    }
-//  }
-//  if (arm_id == code_it_msgs::ArmId::LEFT && !has_left_object) {
-//    res.error = errors::PLACE_NO_LEFT_OBJECT;
-//    return true;
-//  }
-//  if (arm_id == code_it_msgs::ArmId::RIGHT && !has_right_object) {
-//    res.error = errors::PLACE_NO_RIGHT_OBJECT;
-//    return true;
-//  }
-//
-//  // Get the tabletop.
-//  rpe::Scene scene;
-//  bool success = rpe::pr2::GetManipulationScene(tf_listener_, &scene);
-//  if (!success) {
-//    res.error = errors::GET_SCENE;
-//    return true;
-//  }
-//  scene_viz_.set_scene(scene_);
-//  scene_viz_.Visualize();
-//  const rpe::HSurface& tt = scene.primary_surface();
-//
-//  if (arm_id == code_it_msgs::ArmId::LEFT) {
-//    rpe::Object obj;
-//    robot_->left_gripper()->HeldObject(&obj);
-//    success = robot_->left_placer()->Place(obj, tt);
-//  } else {
-//    rpe::Object obj;
-//    robot_->right_gripper()->HeldObject(&obj);
-//    success = robot_->right_placer()->Place(obj, tt);
-//  }
-//  if (!success) {
-//    res.error = errors::PLACE_OBJECT;
-//    return true;
-//  }
-//  return true;
-//}
-
 bool RobotApi::RunPbdAction(code_it_msgs::RunPbdActionRequest& req,
                             code_it_msgs::RunPbdActionResponse& res) {
   ExecuteGoal goal;
@@ -354,6 +254,8 @@ void RobotApi::HandleProgramStopped(const std_msgs::Bool& msg) {
   if (msg.data) {
     return;  // Program is running, nothing to do.
   }
-  robot_->display()->ShowDefault();
+  blinky::FaceGoal goal;
+  goal.display_type = blinky::FaceGoal::DEFAULT;
+  blinky_client_->sendGoal(goal);
 }
 }  // namespace code_it_pr2

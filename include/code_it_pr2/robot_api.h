@@ -3,14 +3,14 @@
 
 #include <string>
 
+#include "actionlib/client/simple_action_client.h"
+#include "blinky/FaceAction.h"
 #include "code_it_msgs/AskMultipleChoice.h"
 #include "code_it_msgs/DisplayMessage.h"
 #include "code_it_msgs/FindCustomLandmarks.h"
 #include "code_it_msgs/FindObjects.h"
 #include "code_it_msgs/IsGripperOpen.h"
 #include "code_it_msgs/LookAt.h"
-//#include "code_it_msgs/Pick.h"
-//#include "code_it_msgs/Place.h"
 #include "code_it_msgs/RunPbdAction.h"
 #include "code_it_msgs/Say.h"
 #include "code_it_msgs/SetGripper.h"
@@ -28,7 +28,8 @@
 
 namespace code_it_pr2 {
 namespace errors {
-static const char ASK_MC_QUESTION[] = "Failed to ask multiple choice question.";
+static const char BLINKY_NOT_AVAILABLE[] =
+    "Failed to connect to a Blinky face.";
 static const char DISPLAY_MESSAGE[] = "Failed to display message.";
 static const char GET_SCENE[] = "The robot failed to read its camera data.";
 static const char FIND_LANDMARK_FAILED[] =
@@ -66,7 +67,8 @@ class RobotApi {
       const rapid_ros::Publisher<visualization_msgs::Marker>& marker_pub,
       rapid_ros::ActionClient<pr2_pbd_interaction::ExecuteAction>& pbd_client,
       const ros::ServiceClient& find_landmark,
-      const ros::ServiceClient& get_landmark_info);
+      const ros::ServiceClient& get_landmark_info,
+      actionlib::SimpleActionClient<blinky::FaceAction>* blinky_client);
   bool AskMultipleChoice(code_it_msgs::AskMultipleChoiceRequest& req,
                          code_it_msgs::AskMultipleChoiceResponse& res);
   bool DisplayMessage(code_it_msgs::DisplayMessageRequest& req,
@@ -79,9 +81,6 @@ class RobotApi {
                      code_it_msgs::IsGripperOpenResponse& res);
   bool LookAt(code_it_msgs::LookAtRequest& req,
               code_it_msgs::LookAtResponse& res);
-  // bool Pick(code_it_msgs::PickRequest& req, code_it_msgs::PickResponse& res);
-  // bool Place(code_it_msgs::PlaceRequest& req, code_it_msgs::PlaceResponse&
-  // res);
   bool RunPbdAction(code_it_msgs::RunPbdActionRequest& req,
                     code_it_msgs::RunPbdActionResponse& res);
   bool Say(code_it_msgs::SayRequest& req, code_it_msgs::SayResponse& res);
@@ -101,6 +100,7 @@ class RobotApi {
   rapid_ros::ActionClient<pr2_pbd_interaction::ExecuteAction>& pbd_client_;
   ros::ServiceClient find_landmark_;
   ros::ServiceClient get_landmark_info_;
+  actionlib::SimpleActionClient<blinky::FaceAction>* blinky_client_;
 };
 }  // namespace code_it_pr2
 #endif  // _CODE_IT_PR2_ROBOT_API_H_

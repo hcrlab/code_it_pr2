@@ -5,6 +5,8 @@ project(code_it_pr2)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  actionlib
+  blinky
   code_it_msgs
   rapid_perception
   rapid_pr2
@@ -112,6 +114,8 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES code_it_pr2
   CATKIN_DEPENDS
+    actionlib
+    blinky
     code_it_msgs
     rapid_perception
     rapid_pr2
