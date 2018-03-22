@@ -54,6 +54,7 @@ install:
     - git clone https://github.com/hcrlab/blinky.git
     - git clone https://github.com/hcrlab/code_it.git
     - git clone https://github.com/hcrlab/code_it_msgs.git
+    - git clone https://github.com/jstnhuang/mongo_msg_db.git
     - git clone https://github.com/jstnhuang/mongo_msg_db_msgs.git
     - git clone https://github.com/jstnhuang/rapid_applications.git
     - git clone https://github.com/jstnhuang/rapid.git
